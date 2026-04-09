@@ -1,0 +1,248 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* Nature Sanctuary UI Palette */
+  --primary: #2D4A22; /* Deep Forest Moss */
+  --primary-light: #4A6B3E;
+  --secondary: #829375; /* Sage Leaf */
+  --accent: #C36F48; /* Terracotta Earth */
+  --accent-light: #DE9371;
+  
+  --bg-stone: #F4F1EA; /* Warm Stone Neutral */
+  --surface-paper: #FFFFFF;
+  --surface-low: #EBE7DE; /* Slightly deeper tone for depth nesting */
+  
+  --text-main: #2C2C2C; /* Charcoal Bark */
+  --text-muted: #5D6357; /* Deep Moss Shadow */
+  --text-white: #FFFFFF;
+  
+  --outline-organic: rgba(45, 74, 34, 0.08);
+  
+  /* Organic Shadows & Elevation */
+  --shadow-ambient: 0 10px 40px rgba(45, 74, 34, 0.06);
+  --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.03);
+  
+  /* Organic Rounding */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 32px;
+  --radius-xl: 48px;
+  
+  --transition-organic: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--bg-stone);
+  color: var(--text-main);
+  line-height: 1.7;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition-organic);
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  transition: var(--transition-organic);
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* Section Transitions (Tonal Nesting) */
+section {
+  padding: 140px 0;
+}
+
+section:nth-child(even) {
+  background-color: var(--surface-low);
+}
+
+/* Crystalline/Organic Reveal */
+.reveal {
+  opacity: 1; /* FORCED VISIBLE FOR DEBUG */
+  transform: translateY(24px) scale(0.98);
+  transition: opacity 1.2s cubic-bezier(0.23, 1, 0.32, 1), transform 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reveal.active {
+  opacity: 1 !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Organic Buttons */
+.btn {
+  padding: 16px 32px;
+  border-radius: 50px; /* Pill shape for nature feel */
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--text-white);
+  box-shadow: 0 8px 16px rgba(45, 74, 34, 0.15);
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-light);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 24px rgba(45, 74, 34, 0.2);
+}
+
+.btn-outline {
+  border: 1.5px solid var(--primary);
+  color: var(--primary);
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: white;
+  transform: translateY(-4px);
+}
+
+/* Navbar (Restorative) */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 32px 0;
+  background: transparent; /* Transparent UI at top */
+  backdrop-filter: blur(0px);
+  transition: var(--transition-organic);
+}
+
+.nav-scrolled {
+  padding: 16px 0;
+  background: rgba(244, 241, 234, 0.85); /* Stone translucent */
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow-soft);
+}
+
+.nav-container {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 32px;
+}
+
+.nav-progress-leaf {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--secondary), var(--primary));
+  transition: width 0.1s ease-out;
+}
+
+.nav-links {
+  display: flex !important;
+  align-items: center !important;
+  gap: 40px !important;
+}
+
+.nav-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+}
+
+.nav-link {
+  position: relative !important;
+  font-weight: 600;
+  color: var(--text-muted) !important;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 8px 0;
+}
+
+.nav-link:hover {
+  color: var(--primary) !important;
+}
+
+.organic-underline {
+  position: absolute;
+  bottom: -6px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--secondary);
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.nav-link:hover .organic-underline {
+  width: 100%;
+}
+
+.logo { 
+  display: flex; align-items: center; gap: 12px; 
+  font-weight: 800; font-size: 1.6rem; color: var(--primary);
+  transition: transform 0.6s var(--transition-organic); 
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-main);
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Hero Modern Layout */
+.hero-section { padding: 220px 0 140px; position: relative; }
+.nature-display { font-size: 4.5rem; line-height: 1.05; margin: 24px 0 32px; color: var(--primary); }
+.underline-terracotta { text-decoration: underline 4px var(--accent); text-underline-offset: 8px; }
+.hero-stats-nature { display: flex; gap: 56px; }
+
+/* Grid Scaling */
+.grid { display: grid; gap: 48px; }
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+/* Footer (Deep Grounded) */
+.footer-nature {
+  background-color: #1E2B1A;
+  color: #E2E8DF;
+  padding: 140px 0 60px;
+}
