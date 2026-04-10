@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import Navbar from './components/Navbar';
-import Hero from './components/Hero';
-import Features from './components/Features';
-import About from './components/About';
-import Roles from './components/Roles';
-import Footer from './components/Footer';
+import Navbar from './components/Navbar/Navbar';
+import Hero from './components/Hero/Hero';
+import Features from './components/Features/Features';
+import About from './components/About/About';
+import Roles from './components/Roles/Roles';
+import Footer from './components/Footer/Footer';
 
 function App() {
   useEffect(() => {

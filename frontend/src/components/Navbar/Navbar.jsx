@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Navbar.css';
+import './Navbar.css';
 import { Leaf } from 'lucide-react';
 
 const Navbar = () => {
