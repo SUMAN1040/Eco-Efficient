@@ -39,13 +39,23 @@
 }
 
 .card-leaf {
-  background: white;
-  border: 1px solid var(--outline-organic);
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
   width: 65%; /* Adjusted width */
   bottom: -15%; /* Pushed further down to create the gap */
   right: -5%; /* Pushed further right */
   z-index: 3;
   text-align: center;
+  box-shadow: 0 20px 48px rgba(45, 74, 34, 0.2);
+}
+
+.card-leaf .stat-highlight-nature {
+  color: white;
+}
+
+.card-leaf .label-organic {
+  color: rgba(255, 255, 255, 0.82);
 }
 
 .nature-badge {
