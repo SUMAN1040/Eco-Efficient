@@ -5,15 +5,15 @@ import sortingImg from '../../assets/sorting_hub.png';
 import communityImg from '../../assets/eco_community.png';
 import { Leaf, Play, ShieldCheck } from 'lucide-react';
 
+const slides = [
+  { image: heroImg, label: 'Eco-Smart Operations' },
+  { image: sortingImg, label: 'AI Sorting Hub L-04' },
+  { image: communityImg, label: 'Residential Hub P-12' }
+];
+
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [time, setTime] = useState(new Date());
-
-  const slides = [
-    { image: heroImg, label: 'Eco-Smart Operations' },
-    { image: sortingImg, label: 'AI Sorting Hub L-04' },
-    { image: communityImg, label: 'Residential Hub P-12' }
-  ];
 
   useEffect(() => {
     const slideInterval = setInterval(() => {
