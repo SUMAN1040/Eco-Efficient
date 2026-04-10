@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import heroImg from '../assets/hero.png';
 import sortingImg from '../assets/sorting_hub.png';
 import communityImg from '../assets/eco_community.png';
-import { Leaf, Play, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Leaf, Play, ShieldCheck } from 'lucide-react';
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -39,14 +39,6 @@ const Hero = () => {
           <p className="hero-description body-lg">
             Join the smart waste revolution. Our AI-driven platform helps communities track, sort, and monetize recycling efforts in real-time.
           </p>
-          <div className="hero-actions">
-            <button className="btn btn-primary pill magnetic">
-              Start Journey <ArrowRight size={20} />
-            </button>
-            <button className="btn btn-outline pill magnetic">
-              Watch Demo <Play size={18} fill="currentColor" />
-            </button>
-          </div>
           <div className="hero-stats-nature">
             <div className="stat-node reveal" style={{ transitionDelay: '0.3s' }}>
               <span className="stat-value">50k+</span>
@@ -120,14 +112,6 @@ const Hero = () => {
           <div className="layer deco-leaf">
              <Leaf className="logo-icon" fill="currentColor" strokeWidth={1.2} />
           </div>
-        </div>
-      </div>
-
-      {/* Scroll Indicator */}
-      <div className="scroll-indicator">
-        <span>Explore Ecosystem</span>
-        <div className="mouse">
-          <div className="wheel" />
         </div>
       </div>
     </section>
