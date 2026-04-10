@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import heroImg from '../assets/hero.png';
-import { Leaf, Play, ArrowRight } from 'lucide-react';
+import sortingImg from '../assets/sorting_hub.png';
+import communityImg from '../assets/eco_community.png';
+import { Leaf, Play, ArrowRight, ShieldCheck } from 'lucide-react';
 
 const Hero = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [time, setTime] = useState(new Date());
+
+  const slides = [
+    { image: heroImg, label: 'Eco-Smart Operations' },
+    { image: sortingImg, label: 'AI Sorting Hub L-04' },
+    { image: communityImg, label: 'Residential Hub P-12' }
+  ];
+
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5000);
+
+    const clockInterval = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => {
+      clearInterval(slideInterval);
+      clearInterval(clockInterval);
+    };
+  }, [slides.length]);
+
   return (
     <section id="home" className="hero-section">
       <div className="hero-bg-accent" />
-      <div className="container hero-container">
+      <div className="hero-container">
         <div className="hero-content reveal">
           <div className="tag-label">Grounding Efficiency</div>
           <h1 className="nature-display">Transforming Waste into <span className="text-accent underline-terracotta">Organic Worth</span></h1>
@@ -23,25 +49,49 @@ const Hero = () => {
           </div>
           <div className="hero-stats-nature">
             <div className="stat-node reveal" style={{ transitionDelay: '0.3s' }}>
-              <div className="stat-value">50k+</div>
-              <div className="stat-label">Tons Diverted</div>
+              <span className="stat-value">50k+</span>
+              <span className="stat-label">Tons Diverted</span>
             </div>
             <div className="stat-node reveal" style={{ transitionDelay: '0.4s' }}>
-              <div className="stat-value">12k+</div>
-              <div className="stat-label">Eco Stewards</div>
+              <span className="stat-value">12k+</span>
+              <span className="stat-label">Eco Stewards</span>
             </div>
             <div className="stat-node reveal" style={{ transitionDelay: '0.5s' }}>
-              <div className="stat-value">120+</div>
-              <div className="stat-label">Green Cities</div>
+              <span className="stat-value">120+</span>
+              <span className="stat-label">Green Cities</span>
             </div>
           </div>
         </div>
         <div className="hero-visual reveal visual-assembly">
-          {/* Main Visual Foundation */}
-          <div className="layer video-layer image-wrapper">
-            <video autoPlay loop muted playsInline className="hero-video" poster={heroImg}>
-              <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4" />
-            </video>
+          <div className="image-wrapper">
+            <div className="hero-slider">
+              {slides.map((slide, idx) => (
+                <img 
+                  key={idx}
+                  src={slide.image} 
+                  alt={slide.label} 
+                  className={`slide-image ${idx === currentSlide ? 'active' : ''}`} 
+                />
+              ))}
+              
+              {/* Dynamic Timestamp Overlay */}
+              <div className="live-timestamp-box">
+                <span className="timestamp-label">System Active Time</span>
+                <span className="timestamp-value">
+                  {time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
+                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+                  <div className="live-pulse" />
+                  <span style={{ fontSize: '0.55rem', opacity: 0.6 }}>AI CORE SYNCED</span>
+                </div>
+              </div>
+
+              {/* Status Indicator */}
+              <div className="system-status-indicator">
+                <ShieldCheck size={14} />
+                <span>{slides[currentSlide].label}</span>
+              </div>
+            </div>
           </div>
 
           {/* Floating Metric Node: AI Efficiency */}
@@ -70,6 +120,14 @@ const Hero = () => {
           <div className="layer deco-leaf">
              <Leaf className="logo-icon" fill="currentColor" strokeWidth={1.2} />
           </div>
+        </div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <div className="scroll-indicator">
+        <span>Explore Ecosystem</span>
+        <div className="mouse">
+          <div className="wheel" />
         </div>
       </div>
     </section>
