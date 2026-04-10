@@ -4,8 +4,9 @@ import { Leaf, Play, ArrowRight } from 'lucide-react';
 
 const Hero = () => {
   return (
-    <section id="home" className="hero-section nature-bg">
-      <div className="container grid grid-2 hero-container">
+    <section id="home" className="hero-section">
+      <div className="hero-bg-accent" />
+      <div className="container hero-container">
         <div className="hero-content reveal">
           <div className="tag-label">Grounding Efficiency</div>
           <h1 className="nature-display">Transforming Waste into <span className="text-accent underline-terracotta">Organic Worth</span></h1>
@@ -35,13 +36,39 @@ const Hero = () => {
             </div>
           </div>
         </div>
-        <div className="hero-visual reveal asymmetry">
-          <div className="image-wrapper organic-lift">
-            <img src={heroImg} alt="EcoEfficient Smart City" />
-            <div className="floating-badge glass-leaf">
-              <Leaf size={14} className="leaf-icon" fill="currentColor" />
-              <span>Live AI Tracking Active</span>
+        <div className="hero-visual reveal visual-assembly">
+          {/* Main Visual Foundation */}
+          <div className="layer video-layer image-wrapper">
+            <video autoPlay loop muted playsInline className="hero-video" poster={heroImg}>
+              <source src="https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4" type="video/mp4" />
+            </video>
+          </div>
+
+          {/* Floating Metric Node: AI Efficiency */}
+          <div className="layer metric-node metric-a">
+            <div className="metric-glass">
+              <div className="metric-icon-wrap"><Play size={14} fill="currentColor" /></div>
+              <div className="metric-data">
+                <span className="label">AI Efficiency</span>
+                <span className="value">98.4%</span>
+              </div>
             </div>
+          </div>
+
+          {/* Floating Metric Node: Live Tracking */}
+          <div className="layer metric-node metric-b">
+            <div className="metric-glass">
+              <div className="live-pulse" />
+              <div className="metric-data">
+                <span className="label">Live Tracking</span>
+                <span className="value">Active</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Decorative 3D Leaf */}
+          <div className="layer deco-leaf">
+             <Leaf className="logo-icon" fill="currentColor" strokeWidth={1.2} />
           </div>
         </div>
       </div>
