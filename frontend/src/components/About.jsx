@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/About.css';
 import { Target, Heart, Shield } from 'lucide-react';
 
 const About = () => {

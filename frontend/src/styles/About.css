@@ -1,0 +1,127 @@
+/* About Section (Visionary Engineering) */
+.about-nature-section {
+  padding: 160px 0;
+  background-color: var(--surface-paper);
+}
+
+.about-organic-container {
+  align-items: center;
+  gap: 80px;
+}
+
+.about-visual-organic {
+  position: relative;
+}
+
+.nature-stack {
+  position: relative;
+  height: 500px;
+}
+
+.about-card-nature {
+  position: absolute;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-ambient);
+  transition: var(--transition-organic);
+}
+
+.card-bark {
+  background-color: var(--primary);
+  color: white;
+  width: 80%;
+  top: 0;
+  left: 0;
+  z-index: 2;
+}
+
+.card-leaf {
+  background: white;
+  border: 1px solid var(--outline-organic);
+  width: 60%;
+  bottom: 0px;
+  right: 0px;
+  z-index: 3;
+  text-align: center;
+}
+
+.nature-badge {
+  display: inline-block;
+  padding: 6px 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  margin-bottom: 24px;
+}
+
+.stat-highlight-nature {
+  font-size: 4rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.label-organic {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.about-content-nature {
+  display: flex;
+  flex-direction: column;
+}
+
+.mission-list-nature {
+  list-style: none;
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.mission-list-nature li {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.leaf-check {
+  width: 44px;
+  height: 44px;
+  background: var(--surface-low);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mission-text-nature strong {
+  display: block;
+  font-size: 1.15rem;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.mission-text-nature p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+@media (max-width: 1024px) {
+  .about-organic-container {
+    grid-template-columns: 1fr;
+    gap: 60px;
+  }
+  
+  .nature-stack {
+    height: 400px;
+  }
+}

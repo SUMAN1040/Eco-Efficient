@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import '../styles/Hero.css';
 import heroImg from '../assets/hero.png';
 import sortingImg from '../assets/sorting_hub.png';
 import communityImg from '../assets/eco_community.png';

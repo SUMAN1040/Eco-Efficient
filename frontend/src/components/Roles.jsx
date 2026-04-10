@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/Roles.css';
 import { User, ShieldCheck, Factory } from 'lucide-react';
 
 const roles = [

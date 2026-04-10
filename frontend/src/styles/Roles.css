@@ -1,0 +1,86 @@
+/* Roles Ecosystem (Professional Scale) */
+.roles-nature-section {
+  padding: 160px 0;
+  background-color: var(--surface-low);
+}
+
+.roles-nature-grid {
+  margin-top: 80px;
+}
+
+.role-card-nature {
+  background: white;
+  padding: 48px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(45, 74, 34, 0.05);
+  display: flex;
+  flex-direction: column;
+  transition: var(--transition-organic);
+  box-shadow: 0 4px 12px rgba(45, 74, 34, 0.03);
+}
+
+.role-card-nature:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-ambient);
+}
+
+.role-icon-box-nature {
+  width: 72px;
+  height: 72px;
+  background: var(--surface-low);
+  color: var(--primary);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+  transition: var(--transition-organic);
+}
+
+.role-card-nature:hover .role-icon-box-nature {
+  background: var(--primary);
+  color: white;
+  transform: scale(1.1);
+}
+
+.nature-title-sm {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  color: var(--primary);
+}
+
+.role-features-nature {
+  list-style: none;
+  margin: 32px 0 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex-grow: 1;
+}
+
+.role-features-nature li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.leaf-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--secondary);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.btn-full {
+  width: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .role-card-nature {
+    padding: 32px;
+  }
+}
