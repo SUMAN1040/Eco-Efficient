@@ -20,27 +20,30 @@
 
 .about-card-nature {
   position: absolute;
-  padding: 40px;
+  padding: 56px 48px; /* Increased padding */
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-ambient);
   transition: var(--transition-organic);
+  display: flex;
+  flex-direction: column;
+  gap: 12px; /* Uniform gap control */
 }
 
 .card-bark {
   background-color: var(--primary);
   color: white;
-  width: 80%;
-  top: 0;
-  left: 0;
+  width: 85%; /* Slightly wider */
+  top: -10%; /* Lifted up slightly */
+  left: -5%; /* Pulled left slightly */
   z-index: 2;
 }
 
 .card-leaf {
   background: white;
   border: 1px solid var(--outline-organic);
-  width: 60%;
-  bottom: 0px;
-  right: 0px;
+  width: 65%; /* Adjusted width */
+  bottom: -15%; /* Pushed further down to create the gap */
+  right: -5%; /* Pushed further right */
   z-index: 3;
   text-align: center;
 }
@@ -48,13 +51,14 @@
 .nature-badge {
   display: inline-block;
   padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08); /* Slightly softer */
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 4px;
   font-size: 0.65rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
-  margin-bottom: 24px;
+  margin-bottom: 8px; /* Reduced to work with flex gap */
 }
 
 .stat-highlight-nature {

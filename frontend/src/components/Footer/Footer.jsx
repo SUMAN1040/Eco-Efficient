@@ -34,7 +34,6 @@ const Footer = () => {
           <a href="#about">About Us</a>
           <a href="#">Careers</a>
           <a href="#">Impact</a>
-          <a href="#">Press</a>
         </div>
         
         <div className="footer-newsletter-nature">
