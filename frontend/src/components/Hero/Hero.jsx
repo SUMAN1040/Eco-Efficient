@@ -36,7 +36,7 @@ const Hero = () => {
       <div className="hero-container">
         <div className="hero-content reveal">
           <div className="tag-label">Grounding Efficiency</div>
-          <h1 className="nature-display">Transforming Waste into <span className="text-accent underline-terracotta">Organic Worth</span></h1>
+          <h1 className="nature-display">Transforming Waste into <span className="text-accent underline-terracotta text-accent-wrap">Organic Worth</span></h1>
           <p className="hero-description body-lg">
             Join the smart waste revolution. Our AI-driven platform helps communities track, sort, and monetize recycling efforts in real-time.
           </p>

@@ -91,9 +91,24 @@ button {
   padding: 0 40px;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 24px;
+  }
+}
+
 /* Section Transitions (Tonal Nesting) */
 section {
   padding: 140px 0;
+  position: relative;
+  overflow: hidden; /* Prevent horizontal scroll from background elements */
+}
+
+
+@media (max-width: 768px) {
+  section {
+    padding: 80px 0;
+  }
 }
 
 section:nth-child(even) {
@@ -123,6 +138,13 @@ section:nth-child(even) {
   font-size: 0.95rem;
 }
 
+@media (max-width: 480px) {
+  .btn {
+    padding: 14px 28px;
+    font-size: 0.9rem;
+  }
+}
+
 .pill {
   border-radius: 50px !important;
 }
@@ -149,7 +171,7 @@ section:nth-child(even) {
 }
 
 .body-lg {
-  font-size: 1.15rem;
+  font-size: clamp(1rem, 2vw, 1.15rem);
   line-height: 1.6;
 }
 
@@ -213,6 +235,15 @@ section:nth-child(even) {
 .grid { display: grid; gap: 48px; }
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 1024px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  .grid { gap: 32px; }
+}
+
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+}
 
 .organic-lift {
   transition: transform 0.6s var(--transition-organic), box-shadow 0.6s var(--transition-organic);
