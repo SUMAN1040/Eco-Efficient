@@ -7,8 +7,16 @@
   background-color: var(--bg-stone);
   position: relative;
   overflow: hidden;
-  padding: 120px 0 60px;
+  padding: 120px 24px 60px; /* Added side padding for mobile */
 }
+
+@media (max-width: 768px) {
+  .auth-page {
+    padding: 80px 16px 40px;
+    height: auto;
+  }
+}
+
 
 .auth-bg-gradient {
   position: absolute;
@@ -32,14 +40,17 @@
   display: flex;
   width: 100%;
   max-width: 1000px;
-  max-height: 85vh; /* Keep it within viewport */
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: 0 40px 100px rgba(45, 74, 34, 0.08);
 }
+
+@media (max-width: 768px) {
+  .auth-card-wrap {
+    max-height: none; /* Allow natural page scroll on mobile */
+    border-radius: var(--radius-md);
+  }
+}
+
 
 /* Visual Side (Dark Branding) */
 .auth-visual-side {
@@ -135,6 +146,15 @@
   align-items: center;
   gap: 8px;
 }
+
+@media (max-width: 400px) {
+  .auth-options {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
 
 .input-group-nature input {
   padding: 12px 14px; /* Slightly tighter */
@@ -257,12 +277,15 @@
   }
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: none; /* Clear stacking context for dropdowns */
   }
 }
 
+
 /* Select Box Nature Styling */
 .select-nature {
+  width: 100%; /* Ensure full width */
+  box-sizing: border-box; /* Prevent padding overflow */
   appearance: none;
   padding: 14px 16px;
   background: var(--bg-stone);
@@ -344,10 +367,11 @@
   .auth-visual-side {
     padding: 48px;
     height: auto;
+    min-height: 250px;
   }
   
   .auth-form-side {
-    padding: 48px;
+    padding: 48px 32px;
   }
   
   .auth-visual-footer {
@@ -356,6 +380,10 @@
 }
 
 @media (max-width: 600px) {
+  .auth-page {
+    padding: 40px 16px;
+  }
+
   .social-auth-grid {
     grid-template-columns: 1fr;
   }
@@ -363,4 +391,19 @@
   .auth-visual-side {
     display: none;
   }
+
+  .auth-form-side {
+    padding: 40px 24px;
+  }
+
+  .auth-header h1 {
+    font-size: 1.8rem;
+  }
 }
+
+@media (max-width: 400px) {
+  .auth-form-side {
+    padding: 32px 16px;
+  }
+}
+
