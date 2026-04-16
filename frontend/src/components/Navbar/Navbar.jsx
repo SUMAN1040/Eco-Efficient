@@ -49,7 +49,7 @@ const Navbar = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
   const closeMenu = () => setIsOpen(false);
 
-  const navLinks = ['Home', 'Features', 'About', 'Contact'];
+  const navLinks = ['Home', 'Features', 'About', 'Roles'];
 
   return (
     <nav className={`navbar ${scrolled ? 'nav-scrolled' : ''} ${isOpen ? 'nav-open' : ''}`}>
