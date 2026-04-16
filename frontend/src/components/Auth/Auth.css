@@ -302,6 +302,12 @@
   transition: var(--transition-organic);
 }
 
+.select-nature:disabled {
+  background-image: none;
+  cursor: default;
+  opacity: 0.8;
+}
+
 .select-nature:focus {
   outline: none;
   border-color: var(--secondary);
@@ -401,9 +407,53 @@
   }
 }
 
-@media (max-width: 400px) {
-  .auth-form-side {
-    padding: 32px 16px;
-  }
+.input-with-action {
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+}
+
+.input-with-action input {
+  flex: 1;
+}
+
+.btn-inline-otp {
+  background: var(--surface-low);
+  border: 1px solid var(--secondary);
+  color: var(--primary);
+  border-radius: var(--radius-sm);
+  padding: 0 16px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--transition-organic);
+  white-space: nowrap;
+}
+
+.btn-inline-otp:hover:not(:disabled) {
+  background: var(--secondary);
+  color: white;
+}
+
+.btn-inline-otp:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.otp-input-large {
+  font-size: 1.5rem !important;
+  letter-spacing: 0.5em;
+  text-align: center;
+  font-weight: 700;
+  padding: 20px !important;
+  color: var(--primary);
+}
+
+.otp-input-large::placeholder {
+  letter-spacing: normal;
+  font-size: 0.9rem;
+  opacity: 0.3;
 }
 

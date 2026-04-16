@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import './Roles.css';
 import { User, ShieldCheck, Factory } from 'lucide-react';
 
@@ -13,7 +14,8 @@ const roles = [
       "Earn and spend Eco Coins",
       "Join community challenges"
     ],
-    cta: "Join Now"
+    cta: "Join Now",
+    path: "/auth"
   },
   {
     type: "Admin",
@@ -73,9 +75,15 @@ const Roles = () => {
                 ))}
               </ul>
               
-              <button className={`btn pill ${index === 0 ? 'btn-primary' : 'btn-outline'} btn-full magnetic`}>
-                {role.cta}
-              </button>
+              {role.path ? (
+                <Link to={role.path} className={`btn pill ${index === 0 ? 'btn-primary' : 'btn-outline'} btn-full magnetic text-center`}>
+                  {role.cta}
+                </Link>
+              ) : (
+                <button className={`btn pill ${index === 0 ? 'btn-primary' : 'btn-outline'} btn-full magnetic`}>
+                  {role.cta}
+                </button>
+              )}
             </div>
           ))}
         </div>
