@@ -12,8 +12,9 @@
 
 @media (max-width: 768px) {
   .auth-page {
-    padding: 80px 16px 40px;
+    padding: 100px 16px 40px; /* Increased from 80px */
     height: auto;
+    align-items: flex-start; /* Changed from center to prevent vertical overlap */
   }
 }
 
@@ -387,7 +388,7 @@
 
 @media (max-width: 600px) {
   .auth-page {
-    padding: 40px 16px;
+    padding: 120px 16px 40px; /* Increased from 40px to clear fixed navbar */
   }
 
   .social-auth-grid {
