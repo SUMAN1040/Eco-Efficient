@@ -1,11 +1,11 @@
 /* Roles Ecosystem (Professional Scale) */
 .roles-nature-section {
-  padding: 160px 0;
+  padding: 100px 0;
   background-color: var(--surface-low);
 }
 
 .roles-nature-grid {
-  margin-top: 80px;
+  margin-top: 50px;
 }
 
 .role-card-nature {
@@ -85,7 +85,34 @@
   }
   
   .roles-nature-grid {
-    margin-top: 60px;
+    margin-top: 100px;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding: 0 40px 24px !important;
+    margin: 0 -40px !important;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    gap: 24px !important;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .roles-nature-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .role-card-nature {
+    padding: 40px 32px;
+    flex: 0 0 50%; 
+    margin-top: 30px;
+    scroll-snap-align: start;
+    max-width: none !important;
+  }
+
+  .nature-title-sm {
+    font-size: 1.4rem;
   }
 }
 
@@ -95,34 +122,16 @@
   }
 
   .roles-nature-grid {
-    margin-top: 48px;
-    display: flex !important; /* Switch to flex for horizontal scroll */
-    flex-wrap: nowrap !important;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    padding: 0 24px 20px !important; /* Add bottom padding for better spacing */
-    margin: 0 -24px !important; /* Bleed to screen edges */
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
+    margin-top: 100px;
+    padding: 0 24px 20px !important;
+    margin: 0 -24px !important;
     gap: 20px !important;
-  }
-
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .roles-nature-grid::-webkit-scrollbar {
-    display: none;
-  }
-
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .roles-nature-grid {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
   }
 
   .role-card-nature {
     padding: 32px;
-    flex: 0 0 85%; /* Shows 15% of the next card */
+    flex: 0 0 85%;
     scroll-snap-align: center;
-    max-width: none !important;
   }
 
   .nature-title-sm {
