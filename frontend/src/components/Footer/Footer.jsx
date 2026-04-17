@@ -26,7 +26,6 @@ const Footer = () => {
           <a href="#features">Features</a>
           <a href="#roles">Ecosystem</a>
           <a href="#">Roadmap</a>
-          <a href="#">Pricing</a>
         </div>
         
         <div className="footer-links-nature">

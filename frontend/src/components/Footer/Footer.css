@@ -131,6 +131,46 @@
     gap: 40px;
     padding-bottom: 60px;
   }
+
+  .footer-brand-nature,
+  .footer-newsletter-nature {
+    grid-column: span 2;
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .brand-desc-nature,
+  .footer-newsletter-nature p {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .social-links-nature,
+  .logo-nature,
+  .newsletter-organic-form {
+    justify-content: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .footer-links-nature {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    width: 100% !important;
+  }
+
+  .footer-links-nature h4,
+  .footer-links-nature a {
+    width: 100%;
+    text-align: center;
+  }
 }
 
 @media (max-width: 768px) {
