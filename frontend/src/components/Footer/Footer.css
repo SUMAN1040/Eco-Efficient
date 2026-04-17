@@ -141,9 +141,15 @@
 
 @media (max-width: 640px) {
   .footer-grid-organic {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     text-align: center;
     gap: 40px;
+  }
+  
+  .footer-brand-nature,
+  .footer-newsletter-nature {
+    grid-column: span 2;
+    text-align: center;
   }
   
   .footer-brand-nature {
@@ -159,6 +165,10 @@
 
   .social-links-nature {
     justify-content: center;
+  }
+
+  .footer-links-nature {
+    align-items: center;
   }
 
   .logo-nature {
