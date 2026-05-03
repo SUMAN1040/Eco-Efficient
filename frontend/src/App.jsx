@@ -1,7 +1,7 @@
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
-import Navbar from './components/Navbar/Navbar';
-import Footer from './components/Footer/Footer';
+import Navbar from './components/LandingPage/Navbar';
+import Footer from './components/LandingPage/Footer';
 import Landing from './pages/Landing';
 import Auth from './components/Auth/Auth';
 import UserDashboard from './components/Dashboard/User/UserDashboard';

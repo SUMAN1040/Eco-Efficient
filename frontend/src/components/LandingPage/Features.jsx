@@ -1,5 +1,5 @@
 import React from 'react';
-import FeatureCard from '../FeatureCard/FeatureCard';
+import FeatureCard from './FeatureCard';
 import { Scan, BarChart3, Coins, Users, ShieldCheck, Zap } from 'lucide-react';
 
 const features = [

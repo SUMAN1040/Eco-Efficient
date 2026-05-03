@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
-import Hero from '../components/Hero/Hero';
-import Features from '../components/Features/Features';
-import About from '../components/About/About';
-import Roles from '../components/Roles/Roles';
+import Hero from '../components/LandingPage/Hero';
+import Features from '../components/LandingPage/Features';
+import About from '../components/LandingPage/About';
+import Roles from '../components/LandingPage/Roles';
 
 const Landing = () => {
   useEffect(() => {
