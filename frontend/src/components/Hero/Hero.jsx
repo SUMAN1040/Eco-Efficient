@@ -116,7 +116,10 @@ const Hero = () => {
       </div>
 
       <style>{`
-        .hero-section { min-height: 750px; background-color: var(--bg-stone); }
+        .hero-section { 
+          min-height: 750px; 
+          background: linear-gradient(135deg, #Fcfdfc 0%, #Eef2eb 100%); 
+        }
         .hero-bg-accent {
           position: absolute; top: 0; right: 0; width: 60%; height: 100%;
           background: radial-gradient(circle at 70% 30%, rgba(130, 147, 117, 0.15), transparent 70%);
