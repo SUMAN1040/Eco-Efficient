@@ -73,8 +73,8 @@ const styles = {
 // --- Sub-components for Scalability ---
 
 const GlassCard = ({ children, className = "", style = {} }) => (
-  <div 
-    className={`card border-0 ${className}`} 
+  <div
+    className={`card border-0 ${className}`}
     style={{ ...styles.glassCard, ...style }}
   >
     <div className="card-body p-0">
@@ -120,21 +120,21 @@ const StatGauge = ({ value, label, subtext, percentage, className = "" }) => (
 const QuickAction = ({ title, desc, icon, variant = "glass", badge }) => {
   const getStyles = () => {
     switch (variant) {
-      case 'emerald': return { 
-        bg: 'linear-gradient(135deg, #10b981, #2D4A22)', 
-        color: '#fff', 
+      case 'emerald': return {
+        bg: 'linear-gradient(135deg, #10b981, #2D4A22)',
+        color: '#fff',
         shadow: '0 10px 30px rgba(16, 185, 129, 0.15)',
         border: 'none'
       };
-      case 'glass': return { 
-        bg: 'rgba(255, 255, 255, 0.9)', 
-        color: '#2D4A22', 
+      case 'glass': return {
+        bg: 'rgba(255, 255, 255, 0.9)',
+        color: '#2D4A22',
         border: '1px solid rgba(45, 74, 34, 0.08)',
         shadow: '0 4px 20px rgba(0, 0, 0, 0.02)'
       };
-      case 'outline': return { 
-        bg: 'rgba(45, 74, 34, 0.02)', 
-        color: '#2D4A22', 
+      case 'outline': return {
+        bg: 'rgba(45, 74, 34, 0.02)',
+        color: '#2D4A22',
         border: '2px solid rgba(45, 74, 34, 0.08)',
         shadow: '0 2px 10px rgba(0, 0, 0, 0.01)'
       };
@@ -145,27 +145,27 @@ const QuickAction = ({ title, desc, icon, variant = "glass", badge }) => {
   const vStyle = getStyles();
 
   return (
-    <button 
+    <button
       className={`btn border-0 p-4 p-md-5 w-100 rounded-5 d-flex flex-column align-items-start position-relative overflow-hidden h-100 quick-action-card ${variant}`}
-      style={{ 
-        background: vStyle.bg, 
-        color: vStyle.color, 
+      style={{
+        background: vStyle.bg,
+        color: vStyle.color,
         boxShadow: vStyle.shadow,
         border: vStyle.border,
         backdropFilter: variant === 'glass' ? 'blur(10px)' : 'none'
       }}
     >
       {badge && (
-        <span 
+        <span
           className="position-absolute top-0 end-0 m-4 px-3 py-1 rounded-pill fw-black text-uppercase shadow-sm"
           style={{ fontSize: '8px', background: '#2D4A22', color: '#fff', letterSpacing: '0.1em', zIndex: 2 }}
         >
           {badge}
         </span>
       )}
-      <div 
-        className="rounded-4 p-3 mb-4 d-flex align-items-center justify-content-center shadow-sm transition-all action-icon-box" 
-        style={{ 
+      <div
+        className="rounded-4 p-3 mb-4 d-flex align-items-center justify-content-center shadow-sm transition-all action-icon-box"
+        style={{
           background: variant === 'emerald' ? 'rgba(255,255,255,0.15)' : '#ecfdf5',
           color: variant === 'emerald' ? '#fff' : '#10b981',
           width: '56px',
@@ -177,18 +177,18 @@ const QuickAction = ({ title, desc, icon, variant = "glass", badge }) => {
       </div>
       <h4 className="h5 fw-black mb-2 text-start position-relative" style={{ zIndex: 2 }}>{title}</h4>
       <p className="small fw-bold opacity-60 mb-0 text-start lh-base position-relative" style={{ maxWidth: '85%', zIndex: 2 }}>{desc}</p>
-      
+
       {/* Decorative Ghost Watermark */}
       {variant !== 'emerald' && icon && React.isValidElement(icon) && (
-        <div 
-          className="position-absolute bottom-0 end-0 p-0 pointer-events-none watermark-icon transition-all" 
-          style={{ 
+        <div
+          className="position-absolute bottom-0 end-0 p-0 pointer-events-none watermark-icon transition-all"
+          style={{
             transform: 'translate(25%, 25%) rotate(-20deg)',
             opacity: 0.04,
             filter: 'blur(1px)'
           }}
         >
-           {React.cloneElement(icon, { size: 180 })}
+          {React.cloneElement(icon, { size: 180 })}
         </div>
       )}
     </button>
@@ -224,6 +224,48 @@ const UserDashboard = () => {
 
   const currentDate = formatDate(pickupDate);
 
+  const profileDropdownMenu = (
+    <div
+      className="position-absolute mt-3 p-2 shadow-lg animate-fade-in"
+      style={{
+        ...styles.glassCard,
+        width: '200px',
+        zIndex: 2000,
+        background: 'rgba(255, 255, 255, 0.9)',
+        backdropFilter: 'blur(20px)',
+        borderRadius: '20px',
+        border: '1px solid rgba(45, 74, 34, 0.08)',
+        right: 0,
+        top: '100%'
+      }}
+    >
+      <div className="d-flex flex-column gap-1">
+        <button className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-dark text-decoration-none rounded-3 hover-bg-light transition-all">
+          <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(45, 74, 34, 0.05)', color: '#2D4A22' }}>
+            <Settings size={16} />
+          </div>
+          <span className="small fw-bold">Settings</span>
+        </button>
+        <button
+          onClick={() => navigate('/dashboard/help')}
+          className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-dark text-decoration-none rounded-3 hover-bg-light transition-all"
+        >
+          <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(16, 185, 129, 0.05)', color: '#10b981' }}>
+            <LifeBuoy size={16} />
+          </div>
+          <span className="small fw-bold">Help Center</span>
+        </button>
+        <hr className="my-1 opacity-5" />
+        <button className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-danger text-decoration-none rounded-3 hover-bg-light transition-all">
+          <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(220, 38, 38, 0.05)', color: '#dc2626' }}>
+            <LogOut size={16} />
+          </div>
+          <span className="small fw-bold">Log Out</span>
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-vh-100 position-relative overflow-x-hidden" style={{ background: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
       <style>{`
@@ -249,6 +291,9 @@ const UserDashboard = () => {
           background: rgba(16, 185, 129, 0.05) !important;
           border-color: rgba(16, 185, 129, 0.4) !important;
         }
+        .action-icon-box {
+          transition: all 0.3s ease;
+        }
         .quick-action-card:hover .watermark-icon {
           transform: translate(15%, 15%) rotate(0deg) scale(1.1) !important;
           opacity: 0.08 !important;
@@ -257,17 +302,17 @@ const UserDashboard = () => {
           transform: scale(1.1) rotate(-5deg);
         }
       `}</style>
-      
+
       {/* Background Decor */}
       <div className="position-fixed top-0 start-0 w-100 h-100 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
         <div className="position-absolute rounded-circle" style={{ width: '600px', height: '600px', background: 'rgba(16, 185, 129, 0.04)', top: '-10%', left: '-10%', filter: 'blur(100px)' }}></div>
-        <div className="position-absolute rounded-circle" style={{ width: '500px', height: '500px', background: 'rgba(45, 74, 34, 0.04)', bottom: '-5%', right: '-5%', filter: 'blur(100px)' }}></div>
+        <div className="position-absolute rounded-circle" style={{ width: '800px', height: '800px', background: 'rgba(45, 74, 34, 0.03)', bottom: '-20%', right: '-10%', filter: 'blur(120px)' }}></div>
       </div>
 
       {/* Top Header Navigation */}
       <nav className="navbar navbar-expand-lg fixed-top py-0" style={styles.header}>
         <div className="container-fluid px-3 px-md-5 d-flex align-items-center justify-content-between" style={{ minHeight: '80px' }}>
-          
+
           {/* Left: Brand */}
           <div className="d-flex align-items-center gap-2 gap-md-3">
             <div className="rounded-3 d-flex align-items-center justify-content-center shadow-sm" style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg, #10b981, #2D4A22)' }}>
@@ -278,14 +323,21 @@ const UserDashboard = () => {
 
           {/* Mobile Toggle & Actions */}
           <div className="d-flex align-items-center gap-2">
-            <div className="d-flex d-lg-none align-items-center gap-2 me-2">
+            <div className="d-flex d-lg-none align-items-center gap-2 me-2 position-relative">
               <button className="btn btn-link text-dark p-2 opacity-75"><Bell size={18} /></button>
-              <div className="rounded-circle border border-2 border-dark/10" style={{ width: '32px', height: '32px' }}>
+              <div 
+                className="rounded-circle border border-2 border-dark/10" 
+                style={{ width: '32px', height: '32px', cursor: 'pointer' }}
+                onClick={() => setProfileOpen(!profileOpen)}
+              >
                 <img src={user.avatar} alt="Avatar" className="w-100 h-100 rounded-circle object-fit-cover" />
               </div>
+              
+              {/* Glass Dropdown Menu (Mobile) */}
+              {profileOpen && profileDropdownMenu}
             </div>
-            <button 
-              className="navbar-toggler border-0 p-2 text-dark shadow-none" 
+            <button
+              className="navbar-toggler border-0 p-2 text-dark shadow-none"
               onClick={() => setMenuOpen(!menuOpen)}
             >
               {menuOpen ? <Plus style={{ transform: 'rotate(45deg)' }} /> : <LayoutDashboard size={24} />}
@@ -297,9 +349,9 @@ const UserDashboard = () => {
             <ul className="navbar-nav mx-auto gap-1 gap-lg-3 py-3 py-lg-0">
               {['Overview', 'Market', 'Impact'].map((item, i) => (
                 <li key={item} className="nav-item">
-                  <a 
+                  <a
                     onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}
-                    className="nav-link text-uppercase text-center fw-black" 
+                    className="nav-link text-uppercase text-center fw-black"
                     style={i === 0 ? { ...styles.navLink, ...styles.navLinkActive } : styles.navLink}
                   >
                     {item}
@@ -307,7 +359,7 @@ const UserDashboard = () => {
                 </li>
               ))}
             </ul>
-            
+
             {/* Desktop Actions */}
             <div className="d-none d-lg-flex align-items-center gap-4">
               <button className="btn btn-link text-dark opacity-50 p-0 hover:opacity-100 position-relative transition-all">
@@ -315,11 +367,11 @@ const UserDashboard = () => {
                 <span className="position-absolute top-0 start-100 translate-middle p-1 bg-success rounded-circle border border-white"></span>
               </button>
               <div className="vr bg-dark opacity-10 mx-2" style={{ height: '24px' }}></div>
-              
+
               {/* Profile Toggle & Dropdown */}
               <div className="position-relative">
-                <div 
-                  className="d-flex align-items-center gap-3 cursor-pointer" 
+                <div
+                  className="d-flex align-items-center gap-3 cursor-pointer"
                   onClick={() => setProfileOpen(!profileOpen)}
                   style={{ cursor: 'pointer' }}
                 >
@@ -331,46 +383,8 @@ const UserDashboard = () => {
                   </div>
                 </div>
 
-                {/* Glass Dropdown Menu */}
-                {profileOpen && (
-                  <div 
-                    className="position-absolute end-0 mt-3 p-2 shadow-lg animate-fade-in" 
-                    style={{ 
-                      ...styles.glassCard, 
-                      width: '200px', 
-                      zIndex: 2000,
-                      background: 'rgba(255, 255, 255, 0.9)',
-                      backdropFilter: 'blur(20px)',
-                      borderRadius: '20px',
-                      border: '1px solid rgba(45, 74, 34, 0.08)'
-                    }}
-                  >
-                    <div className="d-flex flex-column gap-1">
-                      <button className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-dark text-decoration-none rounded-3 hover-bg-light transition-all">
-                        <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(45, 74, 34, 0.05)', color: '#2D4A22' }}>
-                          <Settings size={16} />
-                        </div>
-                        <span className="small fw-bold">Settings</span>
-                      </button>
-                      <button 
-                        onClick={() => navigate('/dashboard/help')}
-                        className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-dark text-decoration-none rounded-3 hover-bg-light transition-all"
-                      >
-                        <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(16, 185, 129, 0.05)', color: '#10b981' }}>
-                          <LifeBuoy size={16} />
-                        </div>
-                        <span className="small fw-bold">Help Center</span>
-                      </button>
-                      <hr className="my-1 opacity-5" />
-                      <button className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-danger text-decoration-none rounded-3 hover-bg-light transition-all">
-                        <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(220, 38, 38, 0.05)', color: '#dc2626' }}>
-                          <LogOut size={16} />
-                        </div>
-                        <span className="small fw-bold">Log Out</span>
-                      </button>
-                    </div>
-                  </div>
-                )}
+                {/* Glass Dropdown Menu (Desktop) */}
+                {profileOpen && profileDropdownMenu}
               </div>
             </div>
           </div>
@@ -380,7 +394,7 @@ const UserDashboard = () => {
       {/* Main Content Workspace */}
       <main className="container-fluid px-3 px-md-5" style={{ paddingTop: '100px', paddingBottom: '80px', position: 'relative', zIndex: 1 }}>
         <div className="mx-auto" style={{ maxWidth: '1200px' }}>
-          
+
           {/* Hero Section */}
           <section className="text-center mb-5 pb-lg-4">
             <div className="d-inline-flex align-items-center gap-2 px-3 py-1 bg-success-subtle rounded-pill mb-4 border border-success-subtle">
@@ -411,11 +425,15 @@ const UserDashboard = () => {
                         </div>
                       </div>
                     </div>
-                    <button className="btn w-100 w-sm-auto px-4 py-3 rounded-4 fw-black text-uppercase text-white shadow-lg transition-all hover-scale" style={{ ...styles.brandBg, fontSize: '10px', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}>
+                    <button 
+                      className="btn w-100 w-sm-auto px-4 py-3 rounded-4 fw-black text-uppercase text-white shadow-lg transition-all hover-scale" 
+                      style={{ ...styles.brandBg, fontSize: '10px', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}
+                      onClick={() => navigate('/dashboard/redeem')}
+                    >
                       Redeem <ArrowRight size={14} className="ms-2" />
                     </button>
                   </div>
-                  
+
                   {/* Sparkline Visual */}
                   <div className="mt-auto pt-4 overflow-hidden">
                     <div className="d-flex align-items-end gap-1 gap-md-2" style={{ height: '60px' }}>
@@ -491,9 +509,9 @@ const UserDashboard = () => {
                         </div>
                       </div>
                       <hr className="my-4 opacity-5" />
-                      <button 
+                      <button
                         onClick={() => setIsRescheduling(true)}
-                        className="btn w-100 py-3 rounded-4 fw-black text-uppercase transition-all hover-scale" 
+                        className="btn w-100 py-3 rounded-4 fw-black text-uppercase transition-all hover-scale"
                         style={{ border: '2px solid rgba(16, 185, 129, 0.1)', color: '#10b981', fontSize: '10px' }}
                       >
                         Reschedule Pickup
@@ -503,9 +521,9 @@ const UserDashboard = () => {
                     <div className="animate-fade-in">
                       <div className="mb-3">
                         <label className="small fw-black text-muted text-uppercase mb-2 d-block" style={{ fontSize: '9px', letterSpacing: '0.1em' }}>Choose Date</label>
-                        <input 
-                          type="date" 
-                          className="form-control border-0 rounded-4 p-3 fw-bold small" 
+                        <input
+                          type="date"
+                          className="form-control border-0 rounded-4 p-3 fw-bold small"
                           style={{ background: 'rgba(16, 185, 129, 0.05)', color: '#2D4A22' }}
                           value={pickupDate}
                           onChange={(e) => setPickupDate(e.target.value)}
@@ -513,7 +531,7 @@ const UserDashboard = () => {
                       </div>
                       <div className="mb-4">
                         <label className="small fw-black text-muted text-uppercase mb-2 d-block" style={{ fontSize: '9px', letterSpacing: '0.1em' }}>Choose Time</label>
-                        <select 
+                        <select
                           className="form-select border-0 rounded-4 p-3 fw-bold small"
                           style={{ background: 'rgba(16, 185, 129, 0.05)', color: '#2D4A22' }}
                           value={pickupTime}
@@ -525,14 +543,14 @@ const UserDashboard = () => {
                         </select>
                       </div>
                       <div className="d-flex gap-2">
-                        <button 
+                        <button
                           onClick={() => setIsRescheduling(false)}
                           className="btn btn-success flex-grow-1 rounded-4 py-3 fw-black text-uppercase shadow-sm"
                           style={{ background: 'linear-gradient(135deg, #10b981, #2D4A22)', border: 'none', fontSize: '10px' }}
                         >
                           Confirm
                         </button>
-                        <button 
+                        <button
                           onClick={() => setIsRescheduling(false)}
                           className="btn btn-light rounded-4 px-4 py-3 fw-black text-uppercase shadow-sm"
                           style={{ fontSize: '10px' }}

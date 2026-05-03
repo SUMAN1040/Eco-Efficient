@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, MapPin, Phone, ArrowRight, ShieldAlert, Briefcase, ChevronLeft, Navigation, Loader2 } from 'lucide-react';
 import OtpVerification from './OtpVerification';
 
 const Auth = () => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [isForgot, setIsForgot] = useState(false);
   const [role, setRole] = useState('user'); // 'user', 'admin', or 'partner'
@@ -191,6 +193,11 @@ const Auth = () => {
             name: data.name
           }));
           setMessage({ type: 'success', text: `Welcome back, ${data.name || data.email}!` });
+          
+          // Small timeout to allow user to see success message before routing
+          setTimeout(() => {
+            navigate('/dashboard');
+          }, 1000);
         } else {
           setMessage({ type: 'success', text: 'Account created successfully! Please sign in.' });
           setIsLogin(true);
