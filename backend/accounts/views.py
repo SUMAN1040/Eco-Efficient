@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import RegisterSerializer, MyTokenObtainPairSerializer, OTPSerializer
 from .models import EmailOTP
@@ -68,3 +69,65 @@ class RegisterView(APIView):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        profile = getattr(user, 'user_profile', None)
+        
+        data = {
+            "email": user.email,
+            "name": profile.name if profile else "",
+            "phone_number": profile.phone_number if profile else "",
+            "city": profile.city if profile else "",
+            "avatar": request.build_absolute_uri(profile.avatar.url) if profile and profile.avatar else ""
+        }
+        return Response(data)
+
+    def put(self, request):
+        user = request.user
+        profile = getattr(user, 'user_profile', None)
+        
+        data = request.data
+        if not profile:
+            from .models import UserProfile
+            profile = UserProfile.objects.create(user=user, name=data.get('name', ''), phone_number=data.get('phone_number', ''), city=data.get('city', ''))
+        else:
+            if 'name' in data:
+                profile.name = data['name']
+            if 'phone_number' in data:
+                profile.phone_number = data['phone_number']
+            if 'city' in data:
+                profile.city = data['city']
+            
+        if 'avatar' in request.FILES:
+            profile.avatar = request.FILES['avatar']
+            
+        profile.save()
+
+        # Update email if requested
+        if 'email' in data and data['email'] != user.email:
+            # Check if email is already taken
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            if User.objects.filter(email=data['email']).exclude(id=user.id).exists():
+                return Response({"email": ["This email is already in use."]}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # OTP Verification
+            otp_val = data.get('otp')
+            if not otp_val:
+                return Response({"otp_required": True, "detail": "OTP is required to change email."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Verify OTP
+            from .models import EmailOTP
+            otp_record = EmailOTP.objects.filter(email=data['email'], otp=otp_val).order_by('-created_at').first()
+            if not otp_record:
+                return Response({"otp": ["Invalid or expired OTP."]}, status=status.HTTP_400_BAD_REQUEST)
+                
+            user.email = data['email']
+            user.save()
+            
+        return Response({"detail": "Profile updated successfully."})
+

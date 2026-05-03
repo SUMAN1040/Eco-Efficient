@@ -7,6 +7,7 @@ import Auth from './components/Auth/Auth';
 import UserDashboard from './components/Dashboard/User/UserDashboard';
 import HelpSupport from './components/Dashboard/User/HelpSupport';
 import Redeem from './components/Dashboard/User/Redeem';
+import Impact from './components/Dashboard/User/Impact';
 
 function App() {
   const location = useLocation();
@@ -22,6 +23,7 @@ function App() {
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/dashboard/redeem" element={<Redeem />} />
         <Route path="/dashboard/help" element={<HelpSupport />} />
+        <Route path="/dashboard/impact" element={<Impact />} />
       </Routes>
       {!isAuthPage && !isDashboardPage && <Footer />}
     </div>
