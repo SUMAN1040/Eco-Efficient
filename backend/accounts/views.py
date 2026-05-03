@@ -131,3 +131,47 @@ class UserProfileView(APIView):
             
         return Response({"detail": "Profile updated successfully."})
 
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        otp_val = request.data.get('otp')
+        new_password = request.data.get('new_password')
+
+        if not otp_val or not new_password:
+            return Response({"detail": "OTP and new password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Verify OTP
+        from .models import EmailOTP
+        otp_record = EmailOTP.objects.filter(email=user.email, otp=otp_val).order_by('-created_at').first()
+        if not otp_record:
+            return Response({"otp": ["Invalid or expired OTP."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update password
+        user.set_password(new_password)
+        user.save()
+
+        # Optionally delete the used OTP to prevent reuse
+        otp_record.delete()
+
+        return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
+
+
+class VerifyOTPView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        otp_val = request.data.get('otp')
+
+        if not otp_val:
+            return Response({"detail": "OTP is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        from .models import EmailOTP
+        otp_record = EmailOTP.objects.filter(email=user.email, otp=otp_val).order_by('-created_at').first()
+        if not otp_record:
+            return Response({"otp": ["Invalid or expired OTP."]}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({"detail": "OTP is valid."}, status=status.HTTP_200_OK)

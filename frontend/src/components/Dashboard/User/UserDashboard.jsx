@@ -27,7 +27,8 @@ import {
   X,
   Gift,
   User,
-  Lock
+  Lock,
+  Check
 } from 'lucide-react';
 import Impact from './Impact';
 
@@ -211,6 +212,12 @@ const UserDashboard = () => {
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [editProfileMode, setEditProfileMode] = useState(false);
+  const [changePasswordMode, setChangePasswordMode] = useState(false);
+  const [passwordStep, setPasswordStep] = useState('otp');
+  const [passwordOTP, setPasswordOTP] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [profileData, setProfileData] = useState({ name: '', email: '', phone_number: '', city: '', avatar: '' });
   const [avatarFile, setAvatarFile] = useState(null);
   const [originalEmail, setOriginalEmail] = useState('');
@@ -320,6 +327,91 @@ const handleUpdateProfile = async (e) => {
   }
 };
 
+const handleInitiateChangePassword = async () => {
+  setChangePasswordMode(true);
+  setPasswordStep('otp');
+  setPasswordOTP('');
+  setNewPassword('');
+  setConfirmPassword('');
+  setIsChangingPassword(true);
+  try {
+    await axios.post('http://localhost:8000/api/accounts/send-otp/', { email: profileData.email });
+    alert('An OTP has been sent to your email. Please enter it to change your password.');
+  } catch (error) {
+    console.error('Failed to send OTP:', error);
+    alert('Failed to send OTP. Please try again later.');
+    setChangePasswordMode(false);
+  } finally {
+    setIsChangingPassword(false);
+  }
+};
+
+const handleVerifyOTP = async (e) => {
+  e.preventDefault();
+  setIsChangingPassword(true);
+  try {
+    const token = localStorage.getItem('accessToken');
+    await axios.post('http://localhost:8000/api/accounts/verify-otp/', {
+      otp: passwordOTP
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    
+    // Valid OTP
+    setPasswordStep('success');
+    setTimeout(() => {
+      setPasswordStep('new_password');
+    }, 1500); // Show success animation for 1.5 seconds
+  } catch (error) {
+    console.error('Failed to verify OTP:', error);
+    if (error.response?.data?.otp) {
+      alert(error.response.data.otp[0]);
+    } else {
+      alert('Failed to verify OTP. Please try again.');
+    }
+  } finally {
+    setIsChangingPassword(false);
+  }
+};
+
+const handleChangePasswordSubmit = async (e) => {
+  e.preventDefault();
+  if (newPassword !== confirmPassword) {
+    alert('New passwords do not match.');
+    return;
+  }
+  setIsChangingPassword(true);
+  try {
+    const token = localStorage.getItem('accessToken');
+    await axios.post('http://localhost:8000/api/accounts/change-password/', {
+      otp: passwordOTP,
+      new_password: newPassword
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    alert('Password changed successfully. You will now be logged out.');
+    setChangePasswordMode(false);
+    handleLogout(); // Automatically log out
+  } catch (error) {
+    console.error('Failed to change password:', error);
+    if (error.response?.data?.otp) {
+      alert(error.response.data.otp[0]);
+    } else {
+      alert('Failed to change password. Please check your inputs.');
+    }
+  } finally {
+    setIsChangingPassword(false);
+  }
+};
+
+const closeSettingsModal = () => {
+  setShowSettingsModal(false);
+  setEditProfileMode(false);
+  setChangePasswordMode(false);
+  setShowOTPInput(false);
+  setOtpValue('');
+};
+
 const formatDate = (dateStr) => {
   const d = new Date(dateStr);
   const months = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -352,7 +444,7 @@ const profileDropdownMenu = (
   >
     <div className="d-flex flex-column gap-1">
       <button
-        onClick={() => { setShowSettingsModal(true); setProfileOpen(false); setEditProfileMode(false); fetchProfileData(); }}
+        onClick={() => { setShowSettingsModal(true); setProfileOpen(false); setEditProfileMode(false); setChangePasswordMode(false); fetchProfileData(); }}
         className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-dark text-decoration-none rounded-3 hover-bg-light transition-all"
       >
         <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(45, 74, 34, 0.05)', color: '#2D4A22' }}>
@@ -383,6 +475,11 @@ const profileDropdownMenu = (
 return (
   <div className="min-vh-100 position-relative overflow-x-hidden" style={{ background: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
     <style>{`
+        @keyframes scaleUp {
+          0% { transform: scale(0.5); opacity: 0; }
+          60% { transform: scale(1.1); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }
           to { opacity: 1; transform: translateY(0); }
@@ -788,15 +885,15 @@ return (
           <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '24px', overflow: 'hidden' }}>
             <div className="modal-header border-0 bg-light p-4">
               <h5 className="modal-title fw-black tracking-tighter d-flex align-items-center gap-2">
-                <Settings size={20} className="text-dark" />
-                {editProfileMode ? 'Edit Profile' : 'Account Settings'}
+                <Settings size={20} className="text-success" />
+                {editProfileMode ? 'Edit Profile' : changePasswordMode ? 'Change Password' : 'Account Settings'}
               </h5>
-              <button type="button" className="btn btn-link text-dark p-0" onClick={() => setShowSettingsModal(false)}>
+              <button type="button" className="btn btn-link text-dark p-0" onClick={closeSettingsModal}>
                 <X size={24} />
               </button>
             </div>
             <div className="modal-body p-4 bg-white">
-              {!editProfileMode ? (
+              {(!editProfileMode && !changePasswordMode) ? (
                 <div className="d-flex flex-column gap-3">
                   <button
                     onClick={() => setEditProfileMode(true)}
@@ -809,7 +906,7 @@ return (
                       <div className="small text-muted fw-normal">Update your personal information</div>
                     </div>
                   </button>
-                  <button className="btn btn-outline-success border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale" style={{ transition: 'transform 0.2s' }}>
+                  <button onClick={handleInitiateChangePassword} className="btn btn-outline-success border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale" style={{ transition: 'transform 0.2s' }}>
                     <div className="bg-success bg-opacity-10 text-success rounded-circle p-2 d-flex align-items-center justify-content-center">
                       <Lock size={20} />
                     </div>
@@ -819,7 +916,7 @@ return (
                     </div>
                   </button>
                 </div>
-              ) : (
+              ) : editProfileMode ? (
                 <form onSubmit={handleUpdateProfile} className="d-flex flex-column gap-3">
                   <div className="d-flex justify-content-center mb-2">
                     <div className="position-relative">
@@ -889,19 +986,67 @@ return (
                     </div>
                   )}
                   <div className="d-flex gap-2 mt-2">
-                    <button type="button" className="btn btn-light flex-grow-1 fw-bold rounded-pill" onClick={() => { setEditProfileMode(false); setShowOTPInput(false); setOtpValue(''); setAvatarFile(null); }}>Back</button>
-                    <button type="submit" className="btn btn-success flex-grow-1 fw-bold rounded-pill" disabled={isUpdatingProfile}>
+                    <button type="submit" className="btn btn-success flex-grow-1 rounded-3 fw-bold shadow-sm" disabled={isUpdatingProfile}>
                       {isUpdatingProfile ? 'Saving...' : (showOTPInput ? 'Verify & Save' : 'Save Changes')}
+                    </button>
+                    <button
+                      type="button"
+                      className="btn btn-light px-4 rounded-3 fw-bold text-muted"
+                      onClick={() => { setEditProfileMode(false); setShowOTPInput(false); setOtpValue(''); }}
+                    >
+                      Cancel
                     </button>
                   </div>
                 </form>
-              )}
+              ) : changePasswordMode ? (
+                <form onSubmit={passwordStep === 'otp' ? handleVerifyOTP : handleChangePasswordSubmit} className="d-flex flex-column gap-3">
+                  {passwordStep === 'otp' ? (
+                    <>
+                      <div className="form-group">
+                        <label className="small fw-bold text-muted mb-1">Enter OTP sent to {profileData.email}</label>
+                        <input type="text" className="form-control rounded-3 p-2 bg-light border-0" value={passwordOTP} onChange={(e) => setPasswordOTP(e.target.value)} required placeholder="Enter OTP" />
+                      </div>
+                      <div className="d-flex gap-2 mt-2">
+                        <button type="submit" className="btn btn-success flex-grow-1 rounded-3 fw-bold shadow-sm" disabled={isChangingPassword}>
+                          {isChangingPassword ? 'Verifying...' : 'Next'}
+                        </button>
+                        <button type="button" onClick={() => setChangePasswordMode(false)} className="btn btn-light px-4 rounded-3 fw-bold text-muted" disabled={isChangingPassword}>Cancel</button>
+                      </div>
+                    </>
+                  ) : passwordStep === 'success' ? (
+                    <div className="text-center py-5 animate-fade-in">
+                      <div className="d-inline-flex align-items-center justify-content-center bg-success text-white rounded-circle mb-3 shadow-sm" style={{ width: '64px', height: '64px', transform: 'scale(1)', transition: 'transform 0.3s ease', animation: 'scaleUp 0.5s ease' }}>
+                        <Check size={32} strokeWidth={3} />
+                      </div>
+                      <h5 className="fw-black text-success">Verified Successfully</h5>
+                      <p className="text-muted small mb-0">Proceeding to change password...</p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="form-group">
+                        <label className="small fw-bold text-muted mb-1">New Password</label>
+                        <input type="password" className="form-control rounded-3 p-2 bg-light border-0" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required placeholder="Enter new password" minLength={8} />
+                      </div>
+                      <div className="form-group">
+                        <label className="small fw-bold text-muted mb-1">Confirm New Password</label>
+                        <input type="password" className="form-control rounded-3 p-2 bg-light border-0" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required placeholder="Confirm new password" minLength={8} />
+                      </div>
+                      <div className="d-flex gap-2 mt-2">
+                        <button type="submit" className="btn btn-success flex-grow-1 rounded-3 fw-bold shadow-sm" disabled={isChangingPassword}>
+                          {isChangingPassword ? 'Saving...' : 'Save Password'}
+                        </button>
+                        <button type="button" onClick={() => setChangePasswordMode(false)} className="btn btn-light px-4 rounded-3 fw-bold text-muted" disabled={isChangingPassword}>Cancel</button>
+                      </div>
+                    </>
+                  )}
+                </form>
+              ) : null}
             </div>
-            {!editProfileMode && (
+            {(!editProfileMode && !changePasswordMode) && (
               <div className="modal-footer border-0 bg-light p-3 justify-content-center">
                 <button
                   className="btn btn-light text-muted rounded-pill px-4 py-2 fw-bold w-100"
-                  onClick={() => setShowSettingsModal(false)}
+                  onClick={closeSettingsModal}
                 >
                   Close
                 </button>
