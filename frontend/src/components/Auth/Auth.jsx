@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, MapPin, Phone, ArrowRight, ShieldAlert, Briefcase, ChevronLeft, Navigation, Loader2 } from 'lucide-react';
 import OtpVerification from './OtpVerification';
-import './Auth.css';
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -209,45 +208,51 @@ const Auth = () => {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-bg-gradient" />
-      <div className="container auth-container">
-        <div className="auth-card-wrap reveal active">
-          <div className="auth-visual-side">
-            <div className="auth-visual-content">
-              <h2 className="headline-lg text-white">Join the <span className="text-secondary">Revolution.</span></h2>
-              <p className="body-sm text-white-muted">
+    <div className="auth-page position-relative overflow-hidden d-flex align-items-center justify-content-center" style={{ minHeight: '100vh', backgroundColor: 'var(--bg-stone)' }}>
+      <div className="auth-bg-gradient position-absolute" style={{ top: '-10%', right: '-5%', width: '50%', height: '60%', background: 'radial-gradient(circle at 70% 30%, rgba(130, 147, 117, 0.2), transparent 70%)', pointerEvents: 'none', zIndex: 0 }} />
+      
+      <div className="container position-relative z-1 d-flex justify-content-center">
+        <div className="row bg-white auth-card-wrap overflow-hidden w-100 reveal active shadow-lg" style={{ maxWidth: '1000px', borderRadius: '16px' }}>
+          
+          {/* Visual Side */}
+          <div className="col-lg-5 auth-visual-side p-5 d-none d-lg-flex flex-column justify-content-between position-relative text-white" style={{ background: 'var(--primary)' }}>
+            <div className="auth-visual-content position-relative z-1">
+              <h2 className="display-6 fw-bold mb-3">Join the <span className="text-secondary">Revolution.</span></h2>
+              <p className="text-white-50" style={{ lineHeight: 1.6 }}>
                 Be part of a global network transforming urban waste into communal wealth.
               </p>
             </div>
-            <div className="auth-visual-footer">
-              <div className="auth-stat">
-                <span className="stat-num">50k+</span>
-                <span className="stat-desc">Users</span>
+            <div className="auth-visual-footer d-flex gap-5 position-relative z-1">
+              <div className="d-flex flex-column">
+                <span className="fs-3 fw-bold text-secondary">50k+</span>
+                <span className="text-uppercase text-white-50" style={{ fontSize: '0.7rem', letterSpacing: '0.1em' }}>Users</span>
               </div>
-              <div className="auth-stat">
-                <span className="stat-num">120+</span>
-                <span className="stat-desc">Cities</span>
+              <div className="d-flex flex-column">
+                <span className="fs-3 fw-bold text-secondary">120+</span>
+                <span className="text-uppercase text-white-50" style={{ fontSize: '0.7rem', letterSpacing: '0.1em' }}>Cities</span>
               </div>
             </div>
+            {/* Decorative element */}
+            <div className="position-absolute bottom-0 end-0" style={{ width: '150px', height: '150px', background: 'rgba(130, 147, 117, 0.1)', borderRadius: '50% 0 0 0' }} />
           </div>
 
-          <div className="auth-form-side">
-            <div className="auth-header">
+          {/* Form Side */}
+          <div className="col-lg-7 auth-form-side p-4 p-md-5 d-flex flex-column bg-white">
+            <div className="auth-header mb-4">
               {isForgot && (
-                <button className="back-btn" onClick={() => setIsForgot(false)}>
+                <button className="back-btn text-uppercase d-flex align-items-center gap-2 mb-4 bg-transparent border-0 text-primary fw-bold p-0" style={{ fontSize: '0.8rem', letterSpacing: '0.05em' }} onClick={() => setIsForgot(false)}>
                   <ChevronLeft size={16} /> Back to Sign In
                 </button>
               )}
               {isOtpSent && !isLogin && (
-                <button className="back-btn" onClick={() => setIsOtpSent(false)}>
+                <button className="back-btn text-uppercase d-flex align-items-center gap-2 mb-4 bg-transparent border-0 text-primary fw-bold p-0" style={{ fontSize: '0.8rem', letterSpacing: '0.05em' }} onClick={() => setIsOtpSent(false)}>
                   <ChevronLeft size={16} /> Edit Details
                 </button>
               )}
-              <h1 className="headline-md">
+              <h1 className="fs-3 fw-bold text-primary mb-1">
                 {isForgot ? 'Reset Password' : (isLogin ? 'Welcome Back' : 'Get Started')}
               </h1>
-              <p className="body-xs text-muted">
+              <p className="text-muted" style={{ fontSize: '0.85rem' }}>
                 {isForgot 
                   ? 'Enter your details to receive a secure reset link.'
                   : (isLogin 
@@ -257,12 +262,12 @@ const Auth = () => {
             </div>
 
             {message.text && (
-              <div className={`auth-alert ${message.type}`}>
+              <div className={`alert ${message.type === 'error' ? 'alert-danger' : 'alert-success'} py-2 px-3 mb-4`} style={{ fontSize: '0.9rem', borderRadius: '8px' }}>
                 {message.text}
               </div>
             )}
 
-            <form className="auth-form" onSubmit={handleSubmit}>
+            <form className="auth-form d-flex flex-column gap-3" onSubmit={handleSubmit}>
               {!isOtpSent ? (
                 <>
                   {!isLogin && !isForgot && (
@@ -289,6 +294,7 @@ const Auth = () => {
                         value={formData.email}
                         onChange={handleInputChange}
                         required
+                        className="w-100"
                       />
                     </div>
                   </div>
@@ -310,10 +316,11 @@ const Auth = () => {
                   {!isLogin && !isForgot && (
                     <div className="input-group-nature location-group">
                       <label>
-                        <MapPin size={14} /> Location
+                        <span className="d-flex align-items-center gap-2"><MapPin size={14} /> Location</span>
                         <button 
                           type="button" 
-                          className="detect-btn" 
+                          className="detect-btn bg-success bg-opacity-10 text-success border border-success border-opacity-25 rounded px-2 py-1 d-flex align-items-center gap-1" 
+                          style={{ fontSize: '11px', fontWeight: 600 }}
                           onClick={handleDetectLocation}
                           disabled={isDetecting}
                           title="Detect current location"
@@ -322,7 +329,7 @@ const Auth = () => {
                           {isDetecting ? "Detecting..." : "Detect"}
                         </button>
                       </label>
-                      <div className="autocomplete-container">
+                      <div className="autocomplete-container position-relative">
                         <input 
                           type="text" 
                           name="city"
@@ -333,6 +340,7 @@ const Auth = () => {
                           onFocus={() => formData.city.length > 1 && setShowSuggestions(true)}
                           required
                           autoComplete="off"
+                          className="w-100"
                         />
                         {showSuggestions && suggestions.length > 0 && (
                           <div className="suggestions-dropdown">
@@ -342,7 +350,7 @@ const Auth = () => {
                                 className="suggestion-item"
                                 onClick={() => handleSelectSuggestion(place)}
                               >
-                                <MapPin size={12} />
+                                <MapPin size={12} className="text-secondary" />
                                 <span>{place}</span>
                               </div>
                             ))}
@@ -418,12 +426,12 @@ const Auth = () => {
                     </>
                   )}
                   {isLogin && !isForgot && (
-                    <div className="auth-options">
-                      <label className="checkbox-wrap">
+                    <div className="auth-options d-flex justify-content-between align-items-center mt-2" style={{ fontSize: '0.85rem' }}>
+                      <label className="checkbox-wrap d-flex align-items-center gap-2 text-muted" style={{ cursor: 'pointer' }}>
                         <input type="checkbox" />
                         <span>Remember me</span>
                       </label>
-                      <button type="button" className="link-text-btn-alt" onClick={() => setIsForgot(true)}>
+                      <button type="button" className="link-text-btn-alt bg-transparent border-0 text-primary fw-semibold p-0" onClick={() => setIsForgot(true)}>
                         Forgot password?
                       </button>
                     </div>
@@ -431,7 +439,7 @@ const Auth = () => {
                   
                   <button 
                     type="submit" 
-                    className={`btn btn-primary btn-full magnetic shimmer ${isLoading ? 'loading' : ''}`}
+                    className={`btn btn-primary w-100 rounded-pill d-flex align-items-center justify-content-center gap-2 py-2 mt-3 fw-bold magnetic shimmer ${isLoading ? 'loading' : ''}`}
                     disabled={isLoading}
                   >
                     {isLoading ? 'Processing...' : (isForgot ? 'Send Reset Link' : (isLogin ? 'Sign In' : 'Create Account'))}
@@ -452,9 +460,9 @@ const Auth = () => {
             </form>
 
             {!isForgot && !isOtpSent && (
-              <div className="auth-footer-toggle" style={{ marginTop: '32px' }}>
+              <div className="auth-footer-toggle text-center text-muted mt-4 pt-3" style={{ fontSize: '0.9rem' }}>
                 <span>{isLogin ? "Don't have an account?" : "Already have an account?"}</span>
-                <button className="link-text-btn" onClick={handleToggleMode}>
+                <button className="bg-transparent border-0 text-primary fw-bold ms-2 p-0" style={{ cursor: 'pointer' }} onClick={handleToggleMode}>
                   {isLogin ? 'Create one now' : 'Sign in instead'}
                 </button>
               </div>
@@ -462,10 +470,77 @@ const Auth = () => {
           </div>
         </div>
       </div>
+
+      {/* Embedded Auth CSS */}
+      <style>{`
+        .auth-page { padding: 120px 24px 60px; }
+        .auth-form-side { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--surface-low) transparent; }
+        
+        .input-group-nature label {
+          font-size: 0.75rem; font-weight: 800; color: var(--text-muted);
+          text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 8px;
+        }
+        
+        .input-group-nature input {
+          padding: 12px 14px; background: var(--bg-stone); border: 1px solid transparent;
+          border-radius: var(--radius-sm); font-size: 0.9rem; transition: all 0.3s ease;
+        }
+        
+        .input-group-nature input:focus {
+          outline: none; border-color: var(--secondary); background: white;
+          box-shadow: 0 4px 12px rgba(130, 147, 117, 0.1);
+        }
+
+        .select-nature {
+          width: 100%; box-sizing: border-box; appearance: none; padding: 14px 16px;
+          background-color: var(--bg-stone); border: 1px solid transparent; border-radius: var(--radius-sm);
+          font-size: 0.95rem; color: var(--primary); font-weight: 500; cursor: pointer;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%232d4a22' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+          background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
+          transition: all 0.3s ease;
+        }
+        
+        .select-nature:focus { outline: none; border-color: var(--secondary); background-color: white; box-shadow: 0 4px 12px rgba(130, 147, 117, 0.1); }
+        .select-nature:disabled { background-image: none; cursor: default; opacity: 0.8; }
+
+        .suggestions-dropdown {
+          position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+          background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+          border: 1px solid rgba(0, 0, 0, 0.05); border-radius: 12px;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1); z-index: 1000; overflow: hidden;
+          animation: slideDown 0.2s ease-out;
+        }
+        
+        @keyframes slideDown {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .suggestion-item {
+          padding: 10px 16px; display: flex; align-items: center; gap: 10px;
+          cursor: pointer; transition: all 0.2s ease; font-size: 13px; color: #334155;
+        }
+        
+        .suggestion-item:hover { background: rgba(34, 197, 94, 0.05); color: #166534; }
+        .spin { animation: spin 1s linear infinite; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        
+        .reveal-input { animation: organicReveal 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards; }
+        @keyframes organicReveal {
+          from { opacity: 0; transform: translateY(-8px) scale(0.98); }
+          to { opacity: 1; transform: none; }
+        }
+        
+        @media (max-width: 991px) {
+          .auth-card-wrap { max-width: 500px !important; }
+        }
+        @media (max-width: 768px) {
+          .auth-page { padding: 100px 16px 40px; height: auto; align-items: flex-start; }
+          .auth-form-side { padding: 40px 24px !important; }
+        }
+      `}</style>
     </div>
   );
 };
-
-
 
 export default Auth;
