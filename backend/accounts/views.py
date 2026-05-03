@@ -34,10 +34,28 @@ class SendOTPView(APIView):
             otp = str(random.randint(100000, 999999))
             EmailOTP.objects.create(email=email, otp=otp)
             
-            # In a real app, send email here
-            print(f"DEBUG: OTP for {email} is {otp}")
+            # Send actual email
+            from django.core.mail import send_mail
+            from django.template.loader import render_to_string
+            from django.utils.html import strip_tags
             
-            return Response({"detail": "OTP sent successfully."}, status=status.HTTP_200_OK)
+            subject = f'{otp} is your Eco-Efficient verification code'
+            html_message = render_to_string('accounts/otp_email.html', {'otp': otp})
+            plain_message = strip_tags(html_message)
+            
+            try:
+                send_mail(
+                    subject,
+                    plain_message,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+                return Response({"detail": "OTP sent successfully."}, status=status.HTTP_200_OK)
+            except Exception as e:
+                print(f"Email Error: {str(e)}")
+                return Response({"detail": "Failed to send email. Please try again later."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class RegisterView(APIView):

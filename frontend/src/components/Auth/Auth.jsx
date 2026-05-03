@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Mail, Lock, User, MapPin, ArrowRight, ShieldAlert, Briefcase, ChevronLeft } from 'lucide-react';
+import { Mail, Lock, User, MapPin, Phone, ArrowRight, ShieldAlert, Briefcase, ChevronLeft, Navigation, Loader2 } from 'lucide-react';
+import OtpVerification from './OtpVerification';
 import './Auth.css';
 
 const Auth = () => {
@@ -11,16 +12,99 @@ const Auth = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     city: '',
     password: '',
     roleId: ''
   });
+  const [suggestions, setSuggestions] = useState([]);
+  const [isDetecting, setIsDetecting] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [resendTimer, setResendTimer] = useState(0);
+
+  React.useEffect(() => {
+    let interval;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer(prev => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    
+    // Handle location suggestions
+    if (name === 'city') {
+      if (value.length > 1) {
+        fetchSuggestions(value);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }
+  };
+
+  const fetchSuggestions = async (query) => {
+    try {
+      const response = await fetch(`https://photon.komoot.io/api/?q=${query}&limit=5`);
+      const data = await response.json();
+      const places = data.features.map(f => {
+        const city = f.properties.city || f.properties.name;
+        const country = f.properties.country;
+        return city && country ? `${city}, ${country}` : city || country;
+      }).filter(Boolean);
+      // Remove duplicates
+      setSuggestions([...new Set(places)]);
+      setShowSuggestions(places.length > 0);
+    } catch (error) {
+      console.error("Suggestion error:", error);
+    }
+  };
+
+  const handleSelectSuggestion = (place) => {
+    setFormData(prev => ({ ...prev, city: place }));
+    setShowSuggestions(false);
+    setSuggestions([]);
+  };
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    setIsDetecting(true);
+    navigator.geolocation.getCurrentPosition(async (position) => {
+      try {
+        const { latitude, longitude } = position.coords;
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+        );
+        const data = await response.json();
+        const city = data.address.city || data.address.town || data.address.village || data.address.suburb;
+        const country = data.address.country;
+        
+        if (city) {
+          setFormData(prev => ({ ...prev, city: `${city}, ${country}` }));
+        } else {
+          setFormData(prev => ({ ...prev, city: country || "Unknown Location" }));
+        }
+      } catch (error) {
+        console.error("Detection error:", error);
+        alert("Failed to detect location accurately.");
+      } finally {
+        setIsDetecting(false);
+      }
+    }, (error) => {
+      console.error("Geolocation error:", error);
+      alert("Permission denied or location unavailable.");
+      setIsDetecting(false);
+    });
   };
 
   const handleToggleMode = () => {
@@ -48,7 +132,8 @@ const Auth = () => {
       });
       if (response.ok) {
         setIsOtpSent(true);
-        setMessage({ type: 'success', text: 'OTP sent to your email!' });
+        setResendTimer(60); // 60 seconds countdown
+        setMessage({ type: 'success', text: 'Verification code sent to your email!' });
       } else {
         const data = await response.json();
         setMessage({ type: 'error', text: data.email?.[0] || 'Failed to send OTP.' });
@@ -62,6 +147,13 @@ const Auth = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Explicit stage handling for registration
+    if (!isLogin && !isOtpSent) {
+      handleGetOtp();
+      return;
+    }
+
     setIsLoading(true);
     setMessage({ type: '', text: '' });
 
@@ -74,6 +166,7 @@ const Auth = () => {
           email: formData.email, 
           password: formData.password, 
           name: formData.name, 
+          phone: formData.phone,
           city: formData.city,
           otp: otp
         };
@@ -170,7 +263,7 @@ const Auth = () => {
             )}
 
             <form className="auth-form" onSubmit={handleSubmit}>
-              {!isOtpSent && (
+              {!isOtpSent ? (
                 <>
                   {!isLogin && !isForgot && (
                     <div className="input-group-nature">
@@ -197,30 +290,65 @@ const Auth = () => {
                         onChange={handleInputChange}
                         required
                       />
-                      {!isLogin && !isForgot && (
-                        <button 
-                          type="button" 
-                          className="btn-inline-otp"
-                          onClick={handleGetOtp}
-                          disabled={isLoading}
-                        >
-                          Get OTP
-                        </button>
-                      )}
                     </div>
                   </div>
 
                   {!isLogin && !isForgot && (
                     <div className="input-group-nature">
-                      <label><MapPin size={14} /> City</label>
+                      <label><Phone size={14} /> Phone Number</label>
                       <input 
-                        type="text" 
-                        name="city"
-                        placeholder="New York, NY" 
-                        value={formData.city}
+                        type="tel" 
+                        name="phone"
+                        placeholder="+1 (555) 000-0000" 
+                        value={formData.phone}
                         onChange={handleInputChange}
                         required
                       />
+                    </div>
+                  )}
+
+                  {!isLogin && !isForgot && (
+                    <div className="input-group-nature location-group">
+                      <label>
+                        <MapPin size={14} /> Location
+                        <button 
+                          type="button" 
+                          className="detect-btn" 
+                          onClick={handleDetectLocation}
+                          disabled={isDetecting}
+                          title="Detect current location"
+                        >
+                          {isDetecting ? <Loader2 size={12} className="spin" /> : <Navigation size={12} />}
+                          {isDetecting ? "Detecting..." : "Detect"}
+                        </button>
+                      </label>
+                      <div className="autocomplete-container">
+                        <input 
+                          type="text" 
+                          name="city"
+                          placeholder="Search city..." 
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                          onFocus={() => formData.city.length > 1 && setShowSuggestions(true)}
+                          required
+                          autoComplete="off"
+                        />
+                        {showSuggestions && suggestions.length > 0 && (
+                          <div className="suggestions-dropdown">
+                            {suggestions.map((place, index) => (
+                              <div 
+                                key={index} 
+                                className="suggestion-item"
+                                onClick={() => handleSelectSuggestion(place)}
+                              >
+                                <MapPin size={12} />
+                                <span>{place}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -300,35 +428,27 @@ const Auth = () => {
                       </button>
                     </div>
                   )}
+                  
+                  <button 
+                    type="submit" 
+                    className={`btn btn-primary btn-full magnetic shimmer ${isLoading ? 'loading' : ''}`}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Processing...' : (isForgot ? 'Send Reset Link' : (isLogin ? 'Sign In' : 'Create Account'))}
+                    {!isLoading && <ArrowRight size={18} />}
+                  </button>
                 </>
+              ) : (
+                <OtpVerification 
+                  email={formData.email}
+                  otp={otp}
+                  setOtp={setOtp}
+                  onVerify={handleSubmit}
+                  onResend={handleGetOtp}
+                  resendTimer={resendTimer}
+                  isLoading={isLoading}
+                />
               )}
-
-              {isOtpSent && !isLogin && (
-                <div className="input-group-nature reveal-input">
-                  <label><Lock size={14} /> Verification Code</label>
-                  <input 
-                    type="text" 
-                    placeholder="Enter 6-digit OTP" 
-                    value={otp}
-                    onChange={(e) => setOtp(e.target.value)}
-                    required
-                    maxLength={6}
-                    className="otp-input-large"
-                  />
-                  <p className="body-xs text-muted" style={{ marginTop: '8px' }}>
-                    We've sent a code to <strong>{formData.email}</strong>.
-                  </p>
-                </div>
-              )}
-
-              <button 
-                type="submit" 
-                className={`btn btn-primary btn-full magnetic shimmer ${isLoading ? 'loading' : ''}`}
-                disabled={isLoading}
-              >
-                {isLoading ? 'Processing...' : (isForgot ? 'Send Reset Link' : (isLogin ? 'Sign In' : (isOtpSent ? 'Validate' : 'Create Account')))}
-                {!isLoading && <ArrowRight size={18} />}
-              </button>
             </form>
 
             {!isForgot && !isOtpSent && (

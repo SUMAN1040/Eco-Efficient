@@ -8,7 +8,7 @@ User = get_user_model()
 class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['name', 'city']
+        fields = ['name', 'phone_number', 'city']
 
 class UserSerializer(serializers.ModelSerializer):
     profile = UserProfileSerializer(source='user_profile', read_only=True)
@@ -19,12 +19,13 @@ class UserSerializer(serializers.ModelSerializer):
 
 class RegisterSerializer(serializers.ModelSerializer):
     name = serializers.CharField(write_only=True)
+    phone = serializers.CharField(write_only=True, required=False)
     city = serializers.CharField(write_only=True)
     otp = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ('email', 'password', 'name', 'city', 'otp')
+        fields = ('email', 'password', 'name', 'phone', 'city', 'otp')
         extra_kwargs = {'password': {'write_only': True}}
 
     def validate_email(self, value):
@@ -47,6 +48,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name = validated_data.pop('name')
+        phone = validated_data.pop('phone', '')
         city = validated_data.pop('city')
         otp = validated_data.pop('otp')
         
@@ -56,7 +58,7 @@ class RegisterSerializer(serializers.ModelSerializer):
             role=User.Role.USER
         )
         from .models import UserProfile
-        UserProfile.objects.create(user=user, name=name, city=city)
+        UserProfile.objects.create(user=user, name=name, phone_number=phone, city=city)
         return user
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

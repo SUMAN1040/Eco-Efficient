@@ -458,3 +458,219 @@
   opacity: 0.3;
 }
 
+.otp-footer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.resend-link {
+  background: none;
+  border: none;
+  color: var(--secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: var(--transition-organic);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+.resend-link:hover:not(:disabled) {
+  background: var(--bg-stone);
+  color: var(--primary);
+}
+
+.resend-link:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Premium OTP Verification UI (Matching Email Template) */
+.otp-verification-container {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  text-align: center;
+  padding: 8px 0;
+}
+
+.otp-header-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.icon-badge {
+  width: 64px;
+  height: 64px;
+  background: var(--bg-stone);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.otp-dashed-box {
+  background: var(--bg-stone);
+  border: 2px dashed var(--secondary);
+  border-radius: var(--radius-md);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: var(--transition-organic);
+}
+
+.otp-dashed-box:focus-within {
+  border-style: solid;
+  background: white;
+  box-shadow: 0 12px 32px rgba(130, 147, 117, 0.15);
+}
+
+.otp-field-premium {
+  background: transparent !important;
+  border: none !important;
+  font-size: 2.5rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.4em !important;
+  text-align: center !important;
+  color: var(--primary) !important;
+  width: 100%;
+  padding: 0 !important;
+}
+
+.otp-field-premium::placeholder {
+  letter-spacing: 0.2em;
+  opacity: 0.1;
+}
+
+.btn-resend-premium {
+  background: none;
+  border: none;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin-top: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition-organic);
+}
+
+.btn-resend-premium:hover:not(:disabled) {
+  background: var(--bg-stone);
+  color: var(--secondary);
+}
+
+.btn-resend-premium:disabled {
+  color: var(--text-muted);
+  cursor: default;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Location Enhancements */
+.location-group {
+  position: relative;
+}
+
+.location-group label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.detect-btn {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+  margin-left: auto;
+}
+
+.detect-btn:hover:not(:disabled) {
+  background: rgba(34, 197, 94, 0.2);
+  transform: translateY(-1px);
+}
+
+.detect-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.autocomplete-container {
+  position: relative;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.suggestion-item {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 13px;
+  color: #334155;
+}
+
+.suggestion-item:hover {
+  background: rgba(34, 197, 94, 0.05);
+  color: #166534;
+}
+
+.suggestion-item svg {
+  color: #94a3b8;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
