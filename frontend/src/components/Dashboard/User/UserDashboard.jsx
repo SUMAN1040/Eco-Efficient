@@ -29,6 +29,7 @@ import {
   User,
   Lock
 } from 'lucide-react';
+import Impact from './Impact';
 
 // --- Custom Design System for Bootstrap ---
 const styles = {
@@ -203,6 +204,7 @@ const QuickAction = ({ title, desc, icon, variant = "glass", badge, onClick }) =
 
 const UserDashboard = () => {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('overview');
   const [profileOpen, setProfileOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showRewardsModal, setShowRewardsModal] = useState(false);
@@ -326,6 +328,13 @@ const formatDate = (dateStr) => {
 
 const currentDate = formatDate(pickupDate);
 
+const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    navigate('/auth');
+  };
+
 const profileDropdownMenu = (
   <div
     className="position-absolute mt-3 p-2 shadow-lg animate-fade-in"
@@ -361,7 +370,7 @@ const profileDropdownMenu = (
         <span className="small fw-bold">Help Center</span>
       </button>
       <hr className="my-1 opacity-5" />
-      <button className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-danger text-decoration-none rounded-3 hover-bg-light transition-all">
+      <button onClick={handleLogout} className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-danger text-decoration-none rounded-3 hover-bg-light transition-all">
         <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(220, 38, 38, 0.05)', color: '#dc2626' }}>
           <LogOut size={16} />
         </div>
@@ -450,9 +459,9 @@ return (
           <ul className="navbar-nav mx-auto gap-1 gap-lg-3 py-3 py-lg-0">
             <li className="nav-item">
               <a
-                onClick={(e) => { e.preventDefault(); navigate('/dashboard'); }}
+                onClick={(e) => { e.preventDefault(); setActiveTab('overview'); }}
                 className="nav-link text-uppercase text-center fw-black"
-                style={{ ...styles.navLink, ...styles.navLinkActive }}
+                style={{ ...styles.navLink, ...(activeTab === 'overview' ? styles.navLinkActive : {}) }}
                 href="#"
               >
                 Overview
@@ -460,9 +469,9 @@ return (
             </li>
             <li className="nav-item">
               <a
-                onClick={(e) => { e.preventDefault(); }}
+                onClick={(e) => { e.preventDefault(); setActiveTab('market'); }}
                 className="nav-link text-uppercase text-center fw-black"
-                style={styles.navLink}
+                style={{ ...styles.navLink, ...(activeTab === 'market' ? styles.navLinkActive : {}) }}
                 href="#"
               >
                 Market
@@ -470,9 +479,9 @@ return (
             </li>
             <li className="nav-item">
               <a
-                onClick={(e) => { e.preventDefault(); navigate('/dashboard/impact'); }}
+                onClick={(e) => { e.preventDefault(); setActiveTab('impact'); }}
                 className="nav-link text-uppercase text-center fw-black"
-                style={styles.navLink}
+                style={{ ...styles.navLink, ...(activeTab === 'impact' ? styles.navLinkActive : {}) }}
                 href="#"
               >
                 Impact
@@ -520,7 +529,9 @@ return (
     <main className="container-fluid px-3 px-md-5" style={{ paddingTop: '100px', paddingBottom: '80px', position: 'relative', zIndex: 1 }}>
       <div className="mx-auto" style={{ maxWidth: '1200px' }}>
 
-        {/* Hero Section */}
+        {activeTab === 'overview' && (
+          <>
+            {/* Hero Section */}
         <section className="text-center mb-5 pb-lg-4">
           <div className="d-inline-flex align-items-center gap-2 px-3 py-1 bg-success-subtle rounded-pill mb-4 border border-success-subtle">
             <Zap size={12} className="text-success" />
@@ -690,6 +701,12 @@ return (
             </GlassCard>
           </div>
         </div>
+        </>
+        )}
+        
+        {activeTab === 'impact' && (
+          <Impact />
+        )}
       </div>
     </main>
 

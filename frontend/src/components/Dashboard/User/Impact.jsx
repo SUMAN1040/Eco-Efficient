@@ -20,13 +20,8 @@ const Impact = () => {
   const currentStats = stats[viewMode];
 
   return (
-    <div className="min-vh-100 position-relative overflow-x-hidden pb-5" style={{ background: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
+    <div className="impact-container pb-5" style={{ fontFamily: "'Inter', sans-serif" }}>
       <style>{`
-        .glass-header {
-          background: rgba(255, 255, 255, 0.85);
-          backdrop-filter: blur(12px);
-          border-bottom: 1px solid rgba(16, 185, 129, 0.1);
-        }
         .impact-card {
           background: rgba(255, 255, 255, 0.6);
           backdrop-filter: blur(24px);
@@ -48,7 +43,6 @@ const Impact = () => {
         .hero-gradient.global {
           background: linear-gradient(135deg, #3b82f6, #1d4ed8);
         }
-        
         /* Interactive Toggle Switch */
         .toggle-switch {
           background: rgba(255, 255, 255, 0.2);
@@ -115,33 +109,8 @@ const Impact = () => {
           transform: scale(1.1) rotate(5deg);
         }
       `}</style>
-
-      {/* Background Decor */}
-      <div className="position-fixed top-0 start-0 w-100 h-100 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
-        <div className="position-absolute rounded-circle" style={{ width: '600px', height: '600px', background: 'rgba(16, 185, 129, 0.04)', top: '-10%', left: '-10%', filter: 'blur(100px)' }}></div>
-        <div className="position-absolute rounded-circle" style={{ width: '800px', height: '800px', background: 'rgba(5, 150, 105, 0.03)', bottom: '-20%', right: '-10%', filter: 'blur(120px)' }}></div>
-      </div>
-
-      {/* Header Navigation */}
-      <nav className="fixed-top glass-header" style={{ zIndex: 1000 }}>
-        <div className="container-fluid px-3 px-md-5 d-flex align-items-center" style={{ minHeight: '80px' }}>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="btn btn-link text-dark text-decoration-none d-flex align-items-center gap-2 p-0 opacity-75 hover-opacity-100"
-          >
-            <ArrowLeft size={20} />
-            <span className="fw-bold">Back</span>
-          </button>
-          <div className="mx-auto fw-black text-uppercase tracking-wide" style={{ letterSpacing: '0.1em' }}>
-            Interactive Impact
-          </div>
-          <div style={{ width: '60px' }}></div>
-        </div>
-      </nav>
-
-      {/* Main Content */}
-      <main className="container-fluid px-3 px-md-5" style={{ paddingTop: '120px', position: 'relative', zIndex: 1 }}>
-        <div className="mx-auto" style={{ maxWidth: '1200px' }}>
+      
+      <div>
 
           {/* Hero Section with Interactive Toggle */}
           <div className={`impact-card hero-gradient p-5 mb-5 position-relative ${viewMode === 'global' ? 'global' : ''}`}>
@@ -276,10 +245,8 @@ const Impact = () => {
                 </span>
               </div>
             )}
-          </div>
-
         </div>
-      </main>
+      </div>
     </div>
   );
 };
