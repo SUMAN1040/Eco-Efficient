@@ -43,7 +43,7 @@ const HelpSupport = () => {
       <div className="container py-5 position-relative" style={{ zIndex: 1 }}>
         {/* Back Button */}
         <button
-          onClick={() => navigate('/dashboard')}
+          onClick={() => navigate('/dashboard/user')}
           className="btn btn-link text-success fw-black text-uppercase text-decoration-none p-0 mb-5 d-flex align-items-center gap-2"
           style={{ fontSize: '11px', letterSpacing: '0.1em' }}
         >

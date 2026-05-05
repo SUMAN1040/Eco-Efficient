@@ -1,5 +1,5 @@
 import React from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/LandingPage/Navbar';
 import Footer from './components/LandingPage/Footer';
 import Landing from './pages/Landing';
@@ -8,6 +8,7 @@ import UserDashboard from './components/Dashboard/User/UserDashboard';
 import HelpSupport from './components/Dashboard/User/HelpSupport';
 import Redeem from './components/Dashboard/User/Redeem';
 import Impact from './components/Dashboard/User/Impact';
+import AdminDashboard from './components/Dashboard/admin/AdminDashboard';
 
 function App() {
   const location = useLocation();
@@ -20,10 +21,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/dashboard" element={<UserDashboard />} />
-        <Route path="/dashboard/redeem" element={<Redeem />} />
-        <Route path="/dashboard/help" element={<HelpSupport />} />
-        <Route path="/dashboard/impact" element={<Impact />} />
+        
+        {/* Dashboard Routes */}
+        <Route path="/dashboard" element={<Navigate to="/dashboard/user" replace />} />
+        <Route path="/dashboard/user" element={<UserDashboard />} />
+        <Route path="/dashboard/user/redeem" element={<Redeem />} />
+        <Route path="/dashboard/user/help" element={<HelpSupport />} />
+        <Route path="/dashboard/user/impact" element={<Impact />} />
+        <Route path="/dashboard/admin" element={<AdminDashboard />} />
       </Routes>
       {!isAuthPage && !isDashboardPage && <Footer />}
     </div>

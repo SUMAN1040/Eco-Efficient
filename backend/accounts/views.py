@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import RegisterSerializer, MyTokenObtainPairSerializer, OTPSerializer
-from .models import EmailOTP
+from .models import EmailOTP, User, AdminProfile, UserProfile
 import kickbox
 from django.conf import settings
 import random
@@ -284,3 +284,93 @@ class UpdateUserRoleView(APIView):
             messages.error(request, "Invalid role selected.")
             
         return redirect('superuser-dashboard')
+
+class AdminRequestView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        org_name = request.data.get('organization_name')
+        city = request.data.get('city')
+        license_doc = request.FILES.get('license_document')
+        gstin_doc = request.FILES.get('gstin_document')
+        auth_letter_doc = request.FILES.get('auth_letter_document')
+
+        if not email or not password or not org_name or not city or not license_doc or not gstin_doc or not auth_letter_doc:
+            return Response({"detail": "Please provide all required fields, including location, organization, and all documents."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if User.objects.filter(email=email).exists():
+            return Response({"email": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Create the User
+            user = User.objects.create_user(email=email, password=password)
+            user.role = User.Role.ADMIN
+            user.save()
+
+            # Create UserProfile
+            UserProfile.objects.create(
+                user=user,
+                name=org_name,
+                city=city
+            )
+
+            # Create AdminProfile
+            import uuid
+            admin_id = f"ADM-{uuid.uuid4().hex[:8].upper()}"
+            AdminProfile.objects.create(
+                user=user,
+                admin_id=admin_id,
+                organization_name=org_name,
+                license_document=license_doc,
+                gstin_document=gstin_doc,
+                auth_letter_document=auth_letter_doc
+            )
+
+            return Response({"detail": "Admin request submitted successfully."}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class PartnerRequestView(APIView):
+    def post(self, request):
+        email = request.data.get('email')
+        password = request.data.get('password')
+        org_name = request.data.get('organization_name')
+        city = request.data.get('city')
+        license_doc = request.FILES.get('license_document')
+        gstin_doc = request.FILES.get('gstin_document')
+        auth_letter_doc = request.FILES.get('auth_letter_document')
+
+        if not email or not password or not org_name or not city or not license_doc or not gstin_doc or not auth_letter_doc:
+            return Response({"detail": "Please provide all required fields, including location, organization, and all documents."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        if User.objects.filter(email=email).exists():
+            return Response({"email": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Create the User
+            user = User.objects.create_user(email=email, password=password)
+            user.role = User.Role.PARTNER
+            user.save()
+
+            # Create UserProfile
+            UserProfile.objects.create(
+                user=user,
+                name=org_name,
+                city=city
+            )
+
+            # Create PartnerProfile
+            import uuid
+            partner_id = f"PTN-{uuid.uuid4().hex[:8].upper()}"
+            PartnerProfile.objects.create(
+                user=user,
+                partner_id=partner_id,
+                organization_name=org_name,
+                license_document=license_doc,
+                gstin_document=gstin_doc,
+                auth_letter_document=auth_letter_doc
+            )
+
+            return Response({"detail": "Partner request submitted successfully."}, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

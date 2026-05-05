@@ -33,5 +33,5 @@ class AdminProfileAdmin(admin.ModelAdmin):
 
 @admin.register(PartnerProfile)
 class PartnerProfileAdmin(admin.ModelAdmin):
-    list_display = ('user', 'partner_id', 'company_name')
-    search_fields = ('user__email', 'partner_id', 'company_name')
+    list_display = ('user', 'partner_id', 'organization_name')
+    search_fields = ('user__email', 'partner_id', 'organization_name')

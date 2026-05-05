@@ -63,15 +63,22 @@ class UserProfile(models.Model):
 
 class AdminProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_profile')
-    admin_id = models.CharField(max_length=50, unique=True)
+    admin_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    organization_name = models.CharField(max_length=255, blank=True, null=True)
+    license_document = models.FileField(upload_to='admin_licenses/', blank=True, null=True)
+    gstin_document = models.FileField(upload_to='admin_gstin/', blank=True, null=True)
+    auth_letter_document = models.FileField(upload_to='admin_auth_letters/', blank=True, null=True)
     
     def __str__(self):
         return f"Admin: {self.admin_id}"
 
 class PartnerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='partner_profile')
-    partner_id = models.CharField(max_length=50, unique=True)
-    company_name = models.CharField(max_length=255, blank=True)
+    partner_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
+    organization_name = models.CharField(max_length=255, blank=True, null=True)
+    license_document = models.FileField(upload_to='partner_licenses/', blank=True, null=True)
+    gstin_document = models.FileField(upload_to='partner_gstin/', blank=True, null=True)
+    auth_letter_document = models.FileField(upload_to='partner_auth_letters/', blank=True, null=True)
     
     def __str__(self):
         return f"Partner: {self.partner_id}"

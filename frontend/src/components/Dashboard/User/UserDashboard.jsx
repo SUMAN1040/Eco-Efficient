@@ -292,7 +292,7 @@ const profileDropdownMenu = (
         <span className="small fw-bold">Settings</span>
       </button>
       <button
-        onClick={() => navigate('/dashboard/help')}
+        onClick={() => navigate('/dashboard/user/help')}
         className="btn btn-link w-100 d-flex align-items-center gap-3 px-3 py-2 text-dark text-decoration-none rounded-3 hover-bg-light transition-all"
       >
         <div className="rounded-2 d-flex align-items-center justify-content-center" style={{ width: '32px', height: '32px', background: 'rgba(16, 185, 129, 0.05)', color: '#10b981' }}>
@@ -364,11 +364,11 @@ return (
       <div className="container-fluid px-3 px-md-5 d-flex align-items-center justify-content-between" style={{ minHeight: '80px' }}>
 
         {/* Left: Brand */}
-        <div className="d-flex align-items-center gap-2 gap-md-3">
-          <div className="rounded-3 d-flex align-items-center justify-content-center shadow-sm" style={{ width: '38px', height: '38px', background: 'linear-gradient(135deg, #10b981, #2D4A22)' }}>
-            <Leaf size={22} color="white" />
+        <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center justify-content-center rounded-3 shadow-sm" style={{ width: '40px', height: '40px', background: 'rgba(16, 185, 129, 0.08)' }}>
+            <Leaf size={24} className="text-success" />
           </div>
-          <span className="h6 mb-0 fw-black text-dark text-uppercase tracking-tighter d-none d-sm-inline" style={{ letterSpacing: '-0.02em' }}>EcoEfficient</span>
+          <span className="h5 mb-0 fw-bold d-none d-sm-inline" style={{ color: '#2D4A22', letterSpacing: '-0.02em' }}>EcoEfficient</span>
         </div>
 
         {/* Mobile Toggle & Actions */}
@@ -500,7 +500,7 @@ return (
                   <button
                     className="btn w-100 w-sm-auto px-4 py-3 rounded-4 fw-black text-uppercase text-white shadow-lg transition-all hover-scale"
                     style={{ ...styles.brandBg, fontSize: '10px', letterSpacing: '0.1em', whiteSpace: 'nowrap' }}
-                    onClick={() => navigate('/dashboard/redeem')}
+                    onClick={() => navigate('/dashboard/user/redeem')}
                   >
                     Redeem <ArrowRight size={14} className="ms-2" />
                   </button>

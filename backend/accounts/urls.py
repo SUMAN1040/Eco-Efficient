@@ -1,6 +1,6 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
-from .views import RegisterView, MyTokenObtainPairView, SendOTPView, UserProfileView, ChangePasswordView, VerifyOTPView, SuperuserDashboardView, UpdateUserRoleView, DeleteAccountView
+from .views import RegisterView, MyTokenObtainPairView, SendOTPView, UserProfileView, ChangePasswordView, VerifyOTPView, SuperuserDashboardView, UpdateUserRoleView, DeleteAccountView, AdminRequestView, PartnerRequestView
 
 urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
@@ -11,6 +11,8 @@ urlpatterns = [
     path('change-password/', ChangePasswordView.as_view(), name='change-password'),
     path('verify-otp/', VerifyOTPView.as_view(), name='verify-otp'),
     path('delete-account/', DeleteAccountView.as_view(), name='delete-account'),
+    path('admin-request/', AdminRequestView.as_view(), name='admin-request'),
+    path('partner-request/', PartnerRequestView.as_view(), name='partner-request'),
     
     # Superuser Management Dashboard
     path('superuser-dashboard/', SuperuserDashboardView.as_view(), name='superuser-dashboard'),

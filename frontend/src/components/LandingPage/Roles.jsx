@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User, ShieldCheck, Factory } from 'lucide-react';
+import AdminRequestForm from './AdminRequestForm';
+import PartnerRequestForm from './PartnerRequestForm';
 
 const roles = [
   {
@@ -43,6 +45,9 @@ const roles = [
 ];
 
 const Roles = () => {
+  const [showAdminForm, setShowAdminForm] = useState(false);
+  const [showPartnerForm, setShowPartnerForm] = useState(false);
+
   return (
     <section id="roles" className="roles-nature-section position-relative" style={{ backgroundColor: 'var(--surface-low)', padding: '100px 0' }}>
       <div className="container">
@@ -85,7 +90,13 @@ const Roles = () => {
                     {role.cta}
                   </Link>
                 ) : (
-                  <button className={`btn w-100 rounded-pill ${index === 0 ? 'btn-primary text-white' : 'btn-outline-success'} magnetic py-2 fw-bold`}>
+                  <button 
+                    onClick={() => {
+                      if (role.type === "Admin") setShowAdminForm(true);
+                      if (role.type === "Partner") setShowPartnerForm(true);
+                    }}
+                    className={`btn w-100 rounded-pill ${index === 0 ? 'btn-primary text-white' : 'btn-outline-success'} magnetic py-2 fw-bold`}
+                  >
                     {role.cta}
                   </button>
                 )}
@@ -94,6 +105,9 @@ const Roles = () => {
           ))}
         </div>
       </div>
+
+      {showAdminForm && <AdminRequestForm onClose={() => setShowAdminForm(false)} />}
+      {showPartnerForm && <PartnerRequestForm onClose={() => setShowPartnerForm(false)} />}
 
       <style>{`
         /* Desktop Card Hover Effects */

@@ -83,7 +83,7 @@ const Redeem = () => {
       <nav className="fixed-top glass-header" style={{ zIndex: 1000 }}>
         <div className="container-fluid px-3 px-md-5 d-flex align-items-center" style={{ minHeight: '80px' }}>
           <button 
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate('/dashboard/user')}
             className="btn btn-link text-dark text-decoration-none d-flex align-items-center gap-2 p-0 opacity-75 hover-opacity-100"
           >
             <ArrowLeft size={20} />

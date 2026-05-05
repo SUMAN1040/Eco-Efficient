@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, MapPin, Phone, ArrowRight, ShieldAlert, Briefcase, ChevronLeft, Navigation, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, MapPin, Phone, ArrowRight, ShieldAlert, Briefcase, ChevronLeft, Navigation, Loader2, CheckCircle } from 'lucide-react';
 import OtpVerification from './OtpVerification';
 
 const Auth = () => {
@@ -24,6 +24,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [resendTimer, setResendTimer] = useState(0);
+  const [showRoleWarning, setShowRoleWarning] = useState(false);
 
   React.useEffect(() => {
     let interval;
@@ -34,6 +35,19 @@ const Auth = () => {
     }
     return () => clearInterval(interval);
   }, [resendTimer]);
+
+  React.useEffect(() => {
+    let warningTimer;
+    if ((role === 'admin' || role === 'partner') && isLogin) {
+      setShowRoleWarning(true);
+      warningTimer = setTimeout(() => {
+        setShowRoleWarning(false);
+      }, 7000);
+    } else {
+      setShowRoleWarning(false);
+    }
+    return () => clearTimeout(warningTimer);
+  }, [role, isLogin]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -146,11 +160,24 @@ const Auth = () => {
     }
   };
 
+  const hasUpperCase = /[A-Z]/.test(formData.password);
+  const hasLowerCase = /[a-z]/.test(formData.password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>_\-=\+\[\]]/.test(formData.password);
+  const isLongEnough = formData.password.length >= 12;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
     // Explicit stage handling for registration
     if (!isLogin && !isOtpSent) {
+      if (!hasUpperCase || !hasLowerCase || !hasSpecialChar || !isLongEnough) {
+        setMessage({ 
+          type: 'error', 
+          text: 'Password must be at least 12 characters long and contain an uppercase letter, a lowercase letter, and a special symbol.' 
+        });
+        return;
+      }
+
       handleGetOtp();
       return;
     }
@@ -196,7 +223,7 @@ const Auth = () => {
           
           // Small timeout to allow user to see success message before routing
           setTimeout(() => {
-            navigate('/dashboard');
+            navigate('/dashboard/user');
           }, 1000);
         } else {
           setMessage({ type: 'success', text: 'Account created successfully! Please sign in.' });
@@ -368,16 +395,34 @@ const Auth = () => {
                   )}
 
                   {!isForgot && (
-                    <div className="input-group-nature">
-                      <label><Lock size={14} /> Password</label>
-                      <input 
-                        type="password" 
-                        name="password"
-                        placeholder="••••••••" 
-                        value={formData.password}
-                        onChange={handleInputChange}
-                        required
-                      />
+                    <div className="d-flex flex-column gap-2 mb-3">
+                      <div className="input-group-nature mb-0">
+                        <label><Lock size={14} /> Password</label>
+                        <input 
+                          type="password" 
+                          name="password"
+                          placeholder="••••••••" 
+                          value={formData.password}
+                          onChange={handleInputChange}
+                          required
+                        />
+                      </div>
+                      {!isLogin && (
+                        <div className="d-flex flex-wrap gap-2 mt-1 px-1">
+                          <div className={`small d-flex align-items-center gap-1 ${hasUpperCase ? 'text-success fw-bold' : 'text-muted'}`} style={{ fontSize: '0.75rem' }}>
+                            <CheckCircle size={12} className={hasUpperCase ? 'text-success' : 'opacity-25'} /> Uppercase
+                          </div>
+                          <div className={`small d-flex align-items-center gap-1 ${hasLowerCase ? 'text-success fw-bold' : 'text-muted'}`} style={{ fontSize: '0.75rem' }}>
+                            <CheckCircle size={12} className={hasLowerCase ? 'text-success' : 'opacity-25'} /> Lowercase
+                          </div>
+                          <div className={`small d-flex align-items-center gap-1 ${hasSpecialChar ? 'text-success fw-bold' : 'text-muted'}`} style={{ fontSize: '0.75rem' }}>
+                            <CheckCircle size={12} className={hasSpecialChar ? 'text-success' : 'opacity-25'} /> Special Char
+                          </div>
+                          <div className={`small d-flex align-items-center gap-1 ${isLongEnough ? 'text-success fw-bold' : 'text-muted'}`} style={{ fontSize: '0.75rem' }}>
+                            <CheckCircle size={12} className={isLongEnough ? 'text-success' : 'opacity-25'} /> 12+ Chars
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
@@ -398,6 +443,15 @@ const Auth = () => {
                           </>
                         )}
                       </select>
+                    </div>
+                  )}
+
+                  {showRoleWarning && (
+                    <div className="alert alert-warning py-2 px-3 mt-2 mb-2 d-flex gap-2 align-items-start shadow-sm" style={{ fontSize: '0.8rem', borderRadius: '10px', backgroundColor: '#fffbeb', color: '#b45309', border: '1px solid #fde68a' }}>
+                      <ShieldAlert size={16} className="flex-shrink-0 mt-1" />
+                      <div>
+                        <strong>Wait!</strong> If you don't have an approved {role === 'admin' ? 'Admin' : 'Partner'} account, you cannot log in here. Please visit our official website to submit an application request first.
+                      </div>
                     </div>
                   )}
 
