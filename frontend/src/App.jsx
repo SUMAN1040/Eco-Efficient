@@ -8,7 +8,8 @@ import UserDashboard from './components/Dashboard/User/UserDashboard';
 import HelpSupport from './components/Dashboard/User/HelpSupport';
 import Redeem from './components/Dashboard/User/Redeem';
 import Impact from './components/Dashboard/User/Impact';
-import AdminDashboard from './components/Dashboard/admin/AdminDashboard';
+import AdminDashboard from './components/Dashboard/Admin/AdminDashboard';
+import PartnerDashboard from './components/Dashboard/Partner/PartnerDashboard';
 
 function App() {
   const location = useLocation();
@@ -29,6 +30,7 @@ function App() {
         <Route path="/dashboard/user/help" element={<HelpSupport />} />
         <Route path="/dashboard/user/impact" element={<Impact />} />
         <Route path="/dashboard/admin" element={<AdminDashboard />} />
+        <Route path="/dashboard/partner" element={<PartnerDashboard />} />
       </Routes>
       {!isAuthPage && !isDashboardPage && <Footer />}
     </div>
