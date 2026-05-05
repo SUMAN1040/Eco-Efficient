@@ -182,12 +182,12 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
     <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', backdropFilter: 'blur(5px)', zIndex: 1050 }}>
       <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '24px', overflow: 'hidden' }}>
-          <div className="modal-header border-0 bg-light p-4">
-            <h5 className="modal-title fw-black tracking-tighter d-flex align-items-center gap-2">
+          <div className="modal-header border-0 bg-light p-4 d-flex justify-content-between align-items-center">
+            <h5 className="modal-title fw-black tracking-tighter d-flex align-items-center gap-2 mb-0">
               <Settings size={20} className="text-success" />
               {editProfileMode ? 'Edit Profile' : changePasswordMode ? 'Change Password' : 'Account Settings'}
             </h5>
-            <button type="button" className="btn btn-link text-dark p-0" onClick={onClose}>
+            <button type="button" className="btn btn-link text-dark p-0 ms-auto" onClick={onClose}>
               <X size={24} />
             </button>
           </div>

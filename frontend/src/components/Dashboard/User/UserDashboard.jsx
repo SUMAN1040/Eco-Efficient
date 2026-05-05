@@ -34,6 +34,7 @@ import Impact from './Impact';
 import SettingsModal from './SettingsModal';
 import RewardsModal from './RewardsModal';
 import NotificationsModal from './NotificationsModal';
+import SubmitWasteModal from './SubmitWasteModal';
 // --- Custom Design System for Bootstrap ---
 const styles = {
   glassCard: {
@@ -213,6 +214,7 @@ const UserDashboard = () => {
   const [showRewardsModal, setShowRewardsModal] = useState(false);
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showSubmitWasteModal, setShowSubmitWasteModal] = useState(false);
   const [profileData, setProfileData] = useState({ name: '', email: '', phone_number: '', city: '', avatar: '' });
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [pickupDate, setPickupDate] = useState('2026-10-12');
@@ -534,7 +536,7 @@ return (
           <h2 className="text-uppercase fw-black text-muted mb-4 mb-md-5" style={{ fontSize: '11px', letterSpacing: '0.4em' }}>Impact Hub</h2>
           <div className="row g-3 g-md-4">
             <div className="col-12 col-md-4">
-              <QuickAction title="Submit Waste" desc="Log new eco-data" icon={<Plus />} variant="emerald" />
+              <QuickAction title="Submit Waste" desc="Log new eco-data" icon={<Plus />} variant="emerald" onClick={() => setShowSubmitWasteModal(true)} />
             </div>
             <div className="col-12 col-md-4">
               <QuickAction title="Scan Waste" desc="Analyze material types" icon={<Camera />} variant="glass" badge="New AI" />
@@ -645,6 +647,7 @@ return (
     </main>
 
     {/* Modals */}
+    <SubmitWasteModal show={showSubmitWasteModal} onClose={() => setShowSubmitWasteModal(false)} />
     <RewardsModal show={showRewardsModal} onClose={() => setShowRewardsModal(false)} />
     <NotificationsModal show={showNotificationsModal} onClose={() => setShowNotificationsModal(false)} />
     <SettingsModal 
