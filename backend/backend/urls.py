@@ -18,8 +18,12 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from accounts.views import SuperuserDashboardView, SuperuserLoginView, SuperuserLogoutView
 
 urlpatterns = [
+    path('', SuperuserDashboardView.as_view(), name='root-superuser-dashboard'),
+    path('superuser-login/', SuperuserLoginView.as_view(), name='superuser-login'),
+    path('superuser-logout/', SuperuserLogoutView.as_view(), name='superuser-logout'),
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
 ]

@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Settings, User, Lock, Camera, X, Check } from 'lucide-react';
+import { Settings, User, Lock, Camera, X, Check, Trash2, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLogout }) => {
   const [editProfileMode, setEditProfileMode] = useState(false);
   const [changePasswordMode, setChangePasswordMode] = useState(false);
+  const [deleteAccountMode, setDeleteAccountMode] = useState(false);
+  const [deleteStep, setDeleteStep] = useState('confirm'); // 'confirm' -> 'otp' -> 'deleting'
+  const [deleteOTP, setDeleteOTP] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
   const [passwordStep, setPasswordStep] = useState('otp');
   const [passwordOTP, setPasswordOTP] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -27,6 +31,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
       setOriginalEmail(profileData.email || '');
       setEditProfileMode(false);
       setChangePasswordMode(false);
+      setDeleteAccountMode(false);
       setShowOTPInput(false);
       setOtpValue('');
       setAvatarFile(null);
@@ -34,6 +39,8 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
       setPasswordOTP('');
       setNewPassword('');
       setConfirmPassword('');
+      setDeleteStep('confirm');
+      setDeleteOTP('');
     }
   }, [show, profileData]);
 
@@ -176,6 +183,43 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
     }
   };
 
+  const handleInitiateDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await axios.post('http://localhost:8000/api/accounts/send-otp/', { email: profileData.email });
+      setDeleteStep('otp');
+      alert('An OTP has been sent to your email to confirm account deletion.');
+    } catch (error) {
+      console.error('Failed to send OTP:', error);
+      alert('Failed to send OTP. Please try again later.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleVerifyDeleteAccount = async (e) => {
+    e.preventDefault();
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      await axios.post('http://localhost:8000/api/accounts/delete-account/', {
+        otp: deleteOTP
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      alert('Your account has been deleted successfully.');
+      handleLogout();
+    } catch (error) {
+      console.error('Failed to delete account:', error);
+      if (error.response?.data?.otp) {
+        alert(error.response.data.otp[0]);
+      } else {
+        alert('Failed to delete account. Please check your OTP.');
+      }
+      setIsDeleting(false);
+    }
+  };
+
   if (!show) return null;
 
   return (
@@ -184,19 +228,19 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
         <div className="modal-content border-0 shadow-lg" style={{ borderRadius: '24px', overflow: 'hidden' }}>
           <div className="modal-header border-0 bg-light p-4 d-flex justify-content-between align-items-center">
             <h5 className="modal-title fw-black tracking-tighter d-flex align-items-center gap-2 mb-0">
-              <Settings size={20} className="text-success" />
-              {editProfileMode ? 'Edit Profile' : changePasswordMode ? 'Change Password' : 'Account Settings'}
+              {deleteAccountMode ? <AlertTriangle size={20} className="text-danger" /> : <Settings size={20} className="text-success" />}
+              {deleteAccountMode ? 'Delete Account' : editProfileMode ? 'Edit Profile' : changePasswordMode ? 'Change Password' : 'Account Settings'}
             </h5>
             <button type="button" className="btn btn-link text-dark p-0 ms-auto" onClick={onClose}>
               <X size={24} />
             </button>
           </div>
           <div className="modal-body p-4 bg-white">
-            {(!editProfileMode && !changePasswordMode) ? (
+            {(!editProfileMode && !changePasswordMode && !deleteAccountMode) ? (
               <div className="d-flex flex-column gap-3">
                 <button
                   onClick={() => setEditProfileMode(true)}
-                  className="btn btn-outline-success border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale" style={{ transition: 'transform 0.2s' }}>
+                  className="btn bg-white border border-success border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale" style={{ transition: 'transform 0.2s' }}>
                   <div className="bg-success bg-opacity-10 text-success rounded-circle p-2 d-flex align-items-center justify-content-center">
                     <User size={20} />
                   </div>
@@ -205,13 +249,22 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
                     <div className="small text-muted fw-normal">Update your personal information</div>
                   </div>
                 </button>
-                <button onClick={handleInitiateChangePassword} className="btn btn-outline-success border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale" style={{ transition: 'transform 0.2s' }}>
+                <button onClick={handleInitiateChangePassword} className="btn bg-white border border-success border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale" style={{ transition: 'transform 0.2s' }}>
                   <div className="bg-success bg-opacity-10 text-success rounded-circle p-2 d-flex align-items-center justify-content-center">
                     <Lock size={20} />
                   </div>
                   <div>
                     <div className="text-dark">Change Password</div>
                     <div className="small text-muted fw-normal">Secure your account credentials</div>
+                  </div>
+                </button>
+                <button onClick={() => setDeleteAccountMode(true)} className="btn bg-white border border-danger border-2 rounded-4 p-3 text-start fw-bold d-flex align-items-center gap-3 transition-all hover-scale mt-2" style={{ transition: 'transform 0.2s' }}>
+                  <div className="bg-danger bg-opacity-10 text-danger rounded-circle p-2 d-flex align-items-center justify-content-center">
+                    <Trash2 size={20} />
+                  </div>
+                  <div>
+                    <div className="text-danger">Delete Account</div>
+                    <div className="small text-muted fw-normal">Permanently erase your account and data</div>
                   </div>
                 </button>
               </div>
@@ -339,9 +392,50 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
                   </>
                 )}
               </form>
+            ) : deleteAccountMode ? (
+              <div className="d-flex flex-column gap-3 text-center">
+                {deleteStep === 'confirm' ? (
+                  <>
+                    <div className="bg-danger bg-opacity-10 text-danger rounded-circle p-3 d-inline-flex mx-auto mb-2">
+                      <AlertTriangle size={32} />
+                    </div>
+                    <h5 className="fw-bold mb-1">Delete Account</h5>
+                    <p className="text-muted small mb-4">
+                      Are you sure you want to delete your account? This action is <strong>irreversible</strong> and will permanently erase all your data.
+                    </p>
+                    <div className="d-flex flex-column gap-2">
+                      <button onClick={handleInitiateDeleteAccount} className="btn btn-danger rounded-3 fw-bold p-3 shadow-sm" disabled={isDeleting}>
+                        {isDeleting ? 'Sending OTP...' : 'Yes, Delete My Account'}
+                      </button>
+                      <button onClick={() => setDeleteAccountMode(false)} className="btn btn-light rounded-3 fw-bold p-3 text-muted" disabled={isDeleting}>
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <form onSubmit={handleVerifyDeleteAccount} className="d-flex flex-column gap-3">
+                    <div className="bg-danger bg-opacity-10 text-danger rounded-circle p-3 d-inline-flex mx-auto mb-2">
+                      <Lock size={32} />
+                    </div>
+                    <h5 className="fw-bold mb-1">Verify Deletion</h5>
+                    <p className="text-muted small mb-3">
+                      Please enter the OTP sent to <strong>{profileData.email}</strong> to confirm account deletion.
+                    </p>
+                    <div className="form-group mb-2">
+                      <input type="text" className="form-control rounded-3 p-3 bg-light border-0 text-center fw-bold letter-spacing-2" placeholder="Enter OTP" value={deleteOTP} onChange={(e) => setDeleteOTP(e.target.value.replace(/\D/g, '').slice(0, 6))} required minLength={6} maxLength={6} />
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button type="submit" className="btn btn-danger flex-grow-1 rounded-3 fw-bold shadow-sm" disabled={isDeleting || deleteOTP.length !== 6}>
+                        {isDeleting ? 'Deleting...' : 'Confirm Deletion'}
+                      </button>
+                      <button type="button" onClick={() => setDeleteAccountMode(false)} className="btn btn-light px-4 rounded-3 fw-bold text-muted" disabled={isDeleting}>Cancel</button>
+                    </div>
+                  </form>
+                )}
+              </div>
             ) : null}
           </div>
-          {(!editProfileMode && !changePasswordMode) && (
+          {(!editProfileMode && !changePasswordMode && !deleteAccountMode) && (
             <div className="modal-footer border-0 bg-light p-3 justify-content-center">
               <button
                 className="btn btn-light text-muted rounded-pill px-4 py-2 fw-bold w-100"

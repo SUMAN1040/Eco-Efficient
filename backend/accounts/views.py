@@ -41,8 +41,8 @@ class SendOTPView(APIView):
             from django.utils.html import strip_tags
             
             subject = f'{otp} is your Eco-Efficient verification code'
+            plain_message = f'Your verification code is: {otp}\n\nThis code will expire in 10 minutes.'
             html_message = render_to_string('accounts/otp_email.html', {'otp': otp})
-            plain_message = strip_tags(html_message)
             
             try:
                 send_mail(
@@ -50,8 +50,8 @@ class SendOTPView(APIView):
                     plain_message,
                     settings.DEFAULT_FROM_EMAIL,
                     [email],
-                    html_message=html_message,
                     fail_silently=False,
+                    html_message=html_message
                 )
                 return Response({"detail": "OTP sent successfully."}, status=status.HTTP_200_OK)
             except Exception as e:
@@ -158,6 +158,29 @@ class ChangePasswordView(APIView):
 
         return Response({"detail": "Password changed successfully."}, status=status.HTTP_200_OK)
 
+class DeleteAccountView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        otp_val = request.data.get('otp')
+        
+        if not otp_val:
+            return Response({"otp": ["OTP is required to delete the account."]}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from .models import EmailOTP
+        otp_record = EmailOTP.objects.filter(email=user.email, otp=otp_val).order_by('-created_at').first()
+        
+        if not otp_record:
+            return Response({"otp": ["Invalid or expired OTP."]}, status=status.HTTP_400_BAD_REQUEST)
+            
+        # Delete OTP record
+        otp_record.delete()
+        
+        # Delete user account and cascade all related data
+        user.delete()
+        
+        return Response({"detail": "Account deleted successfully."}, status=status.HTTP_200_OK)
 
 class VerifyOTPView(APIView):
     permission_classes = [IsAuthenticated]
@@ -175,3 +198,89 @@ class VerifyOTPView(APIView):
             return Response({"otp": ["Invalid or expired OTP."]}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"detail": "OTP is valid."}, status=status.HTTP_200_OK)
+
+from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
+from django.contrib import messages
+from .models import User, AdminProfile, PartnerProfile
+import uuid
+
+def is_superuser(user):
+    return user.is_authenticated and user.is_superuser
+
+class SuperuserLoginView(APIView):
+    def get(self, request):
+        if is_superuser(request.user):
+            return redirect('root-superuser-dashboard')
+        return render(request, 'superuser_login.html')
+
+    def post(self, request):
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, email=email, password=password)
+        if user is not None:
+            if user.is_superuser:
+                login(request, user)
+                return redirect('root-superuser-dashboard')
+            else:
+                messages.error(request, "This account does not have superuser privileges.")
+        else:
+            messages.error(request, "Invalid email or password.")
+            
+        return render(request, 'superuser_login.html')
+
+class SuperuserLogoutView(APIView):
+    def get(self, request):
+        from django.contrib.auth import logout
+        logout(request)
+        messages.success(request, "You have been securely logged out.")
+        return redirect('superuser-login')
+
+@method_decorator(user_passes_test(is_superuser), name='dispatch')
+class SuperuserDashboardView(APIView):
+    def get(self, request):
+        users = User.objects.filter(role=User.Role.USER)
+        partners = User.objects.filter(role=User.Role.PARTNER)
+        admins = User.objects.filter(role=User.Role.ADMIN)
+        
+        context = {
+            'users': users,
+            'partners': partners,
+            'admins': admins,
+        }
+        return render(request, 'superuser_dashboard.html', context)
+
+@method_decorator(user_passes_test(is_superuser), name='dispatch')
+class UpdateUserRoleView(APIView):
+    def post(self, request, user_id):
+        target_user = get_object_or_404(User, id=user_id)
+        new_role = request.POST.get('new_role')
+        
+        if target_user.is_superuser:
+            messages.error(request, "Cannot modify a superuser's role.")
+            return redirect('superuser-dashboard')
+            
+        if new_role in dict(User.Role.choices):
+            target_user.role = new_role
+            target_user.save()
+            
+            # Create corresponding profiles if they don't exist
+            if new_role == User.Role.ADMIN:
+                AdminProfile.objects.get_or_create(
+                    user=target_user,
+                    defaults={'admin_id': f"ADM-{uuid.uuid4().hex[:8].upper()}"}
+                )
+            elif new_role == User.Role.PARTNER:
+                PartnerProfile.objects.get_or_create(
+                    user=target_user,
+                    defaults={'partner_id': f"PTR-{uuid.uuid4().hex[:8].upper()}"}
+                )
+                
+            messages.success(request, f"Successfully updated {target_user.email} to {new_role}.")
+        else:
+            messages.error(request, "Invalid role selected.")
+            
+        return redirect('superuser-dashboard')
