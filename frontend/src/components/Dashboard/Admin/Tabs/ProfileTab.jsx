@@ -1,16 +1,31 @@
 import React from 'react';
 import { User, Building, MapPin, Calendar, ShieldCheck, CheckCircle2 } from 'lucide-react';
 
-const ProfileTab = ({ userProfile }) => {
+const ProfileTab = ({ userProfile, onEditClick }) => {
   return (
     <div className="fade-in">
       <div className="dashboard-card shadow-sm">
-        <div className="profile-header-banner"></div>
+        <div className="profile-header-banner d-flex align-items-end justify-content-end p-3">
+          {userProfile.adminId && userProfile.adminId !== 'N/A' && (
+            <span style={{
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.35)',
+              color: '#fff',
+              borderRadius: '999px',
+              padding: '4px 16px',
+              fontSize: '0.8rem',
+              fontWeight: '700',
+              letterSpacing: '0.05em',
+              backdropFilter: 'blur(4px)'
+            }}>
+              🪪 {userProfile.adminId}
+            </span>
+          )}
+        </div>
         <div className="profile-content px-4">
           <div className="d-flex flex-column flex-md-row align-items-end gap-4 mb-4" style={{ marginTop: '-60px' }}>
             <div className="position-relative">
               <img src={userProfile.photo} alt="Large Profile" className="profile-img-lg shadow-lg border border-4 border-white" />
-              <button className="btn-edit-photo shadow-sm"><User size={16} /></button>
             </div>
             <div className="flex-grow-1 pb-2">
               <h2 className="fw-bold mb-1 text-dark">{userProfile.name}</h2>
@@ -21,7 +36,6 @@ const ProfileTab = ({ userProfile }) => {
               </div>
             </div>
             <div className="pb-2">
-              <button className="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">Edit Profile</button>
             </div>
           </div>
 
@@ -47,6 +61,7 @@ const ProfileTab = ({ userProfile }) => {
                   <label className="small text-muted mb-1">Verified Location</label>
                   <p className="fw-bold">{userProfile.city}</p>
                 </div>
+
               </div>
             </div>
             <div className="col-md-5">
@@ -57,7 +72,7 @@ const ProfileTab = ({ userProfile }) => {
                   <CheckCircle2 className="text-success" size={32} />
                   <div>
                     <div className="fw-bold small">Fully Verified</div>
-                    <div className="text-muted" style={{ fontSize: '0.7rem' }}>Authorized on Feb 12, 2024</div>
+                    <div className="text-muted" style={{ fontSize: '0.7rem' }}>Authorized on {userProfile.joinedDate}</div>
                   </div>
                 </div>
               </div>

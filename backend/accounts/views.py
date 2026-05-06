@@ -82,8 +82,23 @@ class UserProfileView(APIView):
             "name": profile.name if profile else "",
             "phone_number": profile.phone_number if profile else "",
             "city": profile.city if profile else "",
-            "avatar": request.build_absolute_uri(profile.avatar.url) if profile and profile.avatar else ""
+            "avatar": request.build_absolute_uri(profile.avatar.url) if profile and profile.avatar else "",
+            "role": user.role,
+            "date_joined": user.date_joined.strftime("%b %d, %Y") if user.date_joined else ""
         }
+        
+        if user.role == User.Role.ADMIN:
+            admin_profile = getattr(user, 'admin_profile', None)
+            if admin_profile:
+                data["admin_id"] = admin_profile.admin_id
+                data["organization"] = admin_profile.organization_name
+                data["status"] = admin_profile.status
+        elif user.role == User.Role.PARTNER:
+            partner_profile = getattr(user, 'partner_profile', None)
+            if partner_profile:
+                data["partner_id"] = partner_profile.partner_id
+                data["organization"] = partner_profile.organization_name
+                
         return Response(data)
 
     def put(self, request):
@@ -106,6 +121,18 @@ class UserProfileView(APIView):
             profile.avatar = request.FILES['avatar']
             
         profile.save()
+
+        # Update Admin or Partner organization
+        if user.role == User.Role.ADMIN:
+            admin_profile = getattr(user, 'admin_profile', None)
+            if admin_profile and 'organization' in data:
+                admin_profile.organization_name = data['organization']
+                admin_profile.save()
+        elif user.role == User.Role.PARTNER:
+            partner_profile = getattr(user, 'partner_profile', None)
+            if partner_profile and 'organization' in data:
+                partner_profile.organization_name = data['organization']
+                partner_profile.save()
 
         # Update email if requested
         if 'email' in data and data['email'] != user.email:

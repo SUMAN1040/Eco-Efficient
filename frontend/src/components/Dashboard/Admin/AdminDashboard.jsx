@@ -11,6 +11,7 @@ import {
   Leaf
 } from 'lucide-react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import axios from 'axios';
 
 import OverviewTab from './Tabs/OverviewTab';
 import ProfileTab from './Tabs/ProfileTab';
@@ -18,18 +19,57 @@ import EcoCoinsTab from './Tabs/EcoCoinsTab';
 import PartnersTab from './Tabs/PartnersTab';
 import PickupsTab from './Tabs/PickupsTab';
 import ApprovalsTab from './Tabs/ApprovalsTab';
+import AdminSettingsModal from './Tabs/AdminSettingsModal';
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [userProfile, setUserProfile] = useState({
-    name: 'Sarah Sustainability',
-    email: 'admin@cityofspringfield.gov',
-    role: 'City Manager / Admin',
-    organization: 'City of Springfield',
-    city: 'Springfield, IL',
-    photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=128&q=80',
-    joinedDate: 'Jan 2024'
+    name: 'Loading...',
+    email: '',
+    role: 'Admin',
+    organization: '',
+    city: '',
+    photo: '',
+    joinedDate: 'Present',
+    phone_number: '',
+    adminId: ''
   });
+
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      if (!token) return;
+      const response = await axios.get('http://localhost:8000/api/accounts/profile/', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setUserProfile({
+        name: response.data.name || 'Admin',
+        email: response.data.email || '',
+        role: response.data.role || 'Admin',
+        organization: response.data.organization || '',
+        city: response.data.city || '',
+        photo: response.data.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${response.data.name || 'Admin'}`,
+        joinedDate: response.data.date_joined || 'Recently',
+        phone_number: response.data.phone_number || '',
+        adminId: response.data.admin_id || 'N/A'
+      });
+    } catch (error) {
+      console.error('Failed to fetch admin profile:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('user');
+    window.location.href = '/auth';
+  };
 
   const [stats, setStats] = useState([
     { title: 'Total Eco Coins', value: '1.2M', icon: <Coins className="text-warning" />, change: '+12%' },
@@ -87,8 +127,11 @@ const AdminDashboard = () => {
           </div>
 
           <div className="nav-group mt-auto">
-            <SidebarItem id="settings" icon={<Settings size={20} />} label="Settings" />
-            <div className="sidebar-item text-danger">
+            <div className="sidebar-item" onClick={() => setShowSettingsModal(true)}>
+              <div className="icon"><Settings size={20} /></div>
+              <span className="label">Settings</span>
+            </div>
+            <div className="sidebar-item text-danger" onClick={handleLogout}>
               <div className="icon"><LogOut size={20} /></div>
               <span className="label">Logout</span>
             </div>
@@ -114,13 +157,29 @@ const AdminDashboard = () => {
         {/* Content Wrapper */}
         <div className="content-body">
           {activeTab === 'overview' && <OverviewTab userProfile={userProfile} stats={stats} pickups={pickups} />}
-          {activeTab === 'profile' && <ProfileTab userProfile={userProfile} />}
+          {activeTab === 'profile' && (
+            <ProfileTab 
+              userProfile={userProfile} 
+              onEditClick={() => setShowSettingsModal(true)} 
+            />
+          )}
           {activeTab === 'eco-coins' && <EcoCoinsTab />}
           {activeTab === 'partners' && <PartnersTab partners={partners} />}
           {activeTab === 'pickups' && <PickupsTab />}
           {activeTab === 'approvals' && <ApprovalsTab />}
         </div>
       </main>
+
+      {/* Admin Settings Modal reused from UserDashboard */}
+      {showSettingsModal && (
+        <AdminSettingsModal 
+          show={showSettingsModal}
+          onClose={() => setShowSettingsModal(false)}
+          profileData={userProfile}
+          fetchProfileData={fetchProfileData}
+          handleLogout={handleLogout}
+        />
+      )}
 
       <style>{`
         :root {
