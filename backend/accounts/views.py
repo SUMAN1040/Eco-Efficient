@@ -224,6 +224,7 @@ class SuperuserLoginView(APIView):
         if user is not None:
             if user.is_superuser:
                 login(request, user)
+                request.session.set_expiry(300) # 5 minutes strict expiry
                 return redirect('root-superuser-dashboard')
             else:
                 messages.error(request, "This account does not have superuser privileges.")
@@ -242,6 +243,9 @@ class SuperuserLogoutView(APIView):
 @method_decorator(user_passes_test(is_superuser), name='dispatch')
 class SuperuserDashboardView(APIView):
     def get(self, request):
+        # Refresh the 5-minute session on activity
+        request.session.set_expiry(300)
+        
         users = User.objects.filter(role=User.Role.USER)
         partners = User.objects.filter(role=User.Role.PARTNER)
         admins = User.objects.filter(role=User.Role.ADMIN, admin_profile__status=AdminProfile.Status.APPROVED)
