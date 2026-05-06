@@ -223,7 +223,13 @@ const Auth = () => {
           
           // Small timeout to allow user to see success message before routing
           setTimeout(() => {
-            navigate('/dashboard/user');
+            if (data.role === 'ADMIN') {
+              navigate('/dashboard/admin');
+            } else if (data.role === 'PARTNER') {
+              navigate('/dashboard/partner');
+            } else {
+              navigate('/dashboard/user');
+            }
           }, 1000);
         } else {
           setMessage({ type: 'success', text: 'Account created successfully! Please sign in.' });

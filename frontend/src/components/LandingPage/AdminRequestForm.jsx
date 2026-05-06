@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { X, Building, Mail, Lock, User, FileText, UploadCloud, ShieldCheck, Loader2, CheckCircle, MapPin, Navigation } from 'lucide-react';
+import { X, Building, Mail, Lock, User, FileText, UploadCloud, ShieldCheck, Loader2, CheckCircle, MapPin, Navigation, Phone } from 'lucide-react';
+import OtpVerification from '../Auth/OtpVerification';
 
 const AdminRequestForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    phone_number: '',
     organization_name: '',
     city: '',
     license_document: null,
@@ -22,6 +24,8 @@ const AdminRequestForm = ({ onClose }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [isDetecting, setIsDetecting] = useState(false);
+  const [isOtpSent, setIsOtpSent] = useState(false);
+  const [otp, setOtp] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value, files } = e.target;
@@ -137,11 +141,43 @@ const AdminRequestForm = ({ onClose }) => {
     }
 
     try {
+      const response = await fetch('http://localhost:8000/api/accounts/send-otp/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setIsOtpSent(true);
+        setMessage({ type: 'success', text: 'Verification code sent to your email.' });
+      } else {
+        setMessage({ type: 'error', text: data.email?.[0] || 'Failed to send OTP.' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Connection failed. Please try again.' });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleFinalSubmit = async () => {
+    if (otp.length !== 6) {
+      setMessage({ type: 'error', text: 'Please enter a valid 6-digit OTP.' });
+      return;
+    }
+
+    setIsLoading(true);
+    setMessage({ type: '', text: '' });
+
+    try {
       const data = new FormData();
       data.append('email', formData.email);
       data.append('password', formData.password);
+      data.append('phone_number', formData.phone_number);
       data.append('organization_name', formData.organization_name);
       data.append('city', formData.city);
+      data.append('otp', otp);
       if (formData.license_document) {
         data.append('license_document', formData.license_document);
       }
@@ -162,7 +198,7 @@ const AdminRequestForm = ({ onClose }) => {
       if (response.ok) {
         setIsSuccess(true);
       } else {
-        const errorMsg = result.detail || result.email || result.error || 'Failed to submit request.';
+        const errorMsg = result.detail || result.otp || result.email || result.error || 'Failed to submit request.';
         setMessage({ type: 'error', text: Array.isArray(errorMsg) ? errorMsg[0] : errorMsg });
       }
     } catch (error) {
@@ -228,8 +264,20 @@ const AdminRequestForm = ({ onClose }) => {
           </button>
           
           <div className="mb-4">
+            {isOtpSent && (
+              <button 
+                className="btn btn-link text-decoration-none text-primary fw-bold p-0 mb-3 align-self-start d-flex align-items-center gap-2"
+                onClick={() => setIsOtpSent(false)}
+              >
+                <X size={16} /> Back to Edit Details
+              </button>
+            )}
             <h3 className="fw-bolder mb-1 text-dark">Create Admin Profile</h3>
-            <p className="text-muted">Please provide your organization's verified details.</p>
+            <p className="text-muted">
+              {isOtpSent 
+                ? "Verify your official email to complete the application."
+                : "Please provide your organization's verified details."}
+            </p>
           </div>
 
           {message.text && (
@@ -239,173 +287,191 @@ const AdminRequestForm = ({ onClose }) => {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4 flex-grow-1 justify-content-center">
-            
-            <div className="premium-input-group">
-              <div className="input-icon"><Building size={18} /></div>
-              <input type="text" name="organization_name" placeholder="Organization Name (e.g., City of Springfield)" value={formData.organization_name} onChange={handleInputChange} required className="premium-input" />
-            </div>
-
-            <div className="premium-input-group position-relative">
-              <div className="input-icon"><MapPin size={18} /></div>
-              <input 
-                type="text" 
-                name="city" 
-                placeholder="City Location" 
-                value={formData.city} 
-                onChange={handleInputChange} 
-                required 
-                className="premium-input" 
-                autoComplete="off"
-              />
-              <button 
-                type="button" 
-                onClick={handleDetectLocation} 
-                className="btn btn-sm btn-light position-absolute end-0 top-50 translate-middle-y me-2 d-flex align-items-center gap-1 border-0 fw-semibold"
-                disabled={isDetecting}
-                style={{ background: 'var(--surface-low)', color: 'var(--primary)', borderRadius: '8px' }}
-              >
-                {isDetecting ? <Loader2 size={14} className="spin" /> : <Navigation size={14} />}
-                Auto Detect
-              </button>
+          {!isOtpSent ? (
+            <form onSubmit={handleSubmit} className="d-flex flex-column gap-4 flex-grow-1 justify-content-center">
               
-              {showSuggestions && suggestions.length > 0 && (
-                <div className="suggestions-dropdown position-absolute w-100 bg-white shadow-lg rounded-3 mt-1 z-3" style={{ top: '100%', border: '1px solid var(--border-color)' }}>
-                  {suggestions.map((place, index) => (
-                    <div 
-                      key={index} 
-                      className="suggestion-item p-3 border-bottom d-flex align-items-center gap-2"
-                      onClick={() => handleSelectSuggestion(place)}
-                      style={{ cursor: 'pointer', transition: 'background 0.2s' }}
-                    >
-                      <MapPin size={14} className="text-secondary" />
-                      <span className="text-dark small fw-medium">{place}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="premium-input-group">
-              <div className="input-icon"><Mail size={18} /></div>
-              <input type="email" name="email" placeholder="Official Email" value={formData.email} onChange={handleInputChange} required className="premium-input" />
-            </div>
-
-            <div className="d-flex flex-column gap-2">
               <div className="premium-input-group">
-                <div className="input-icon"><Lock size={18} /></div>
-                <input type="password" name="password" placeholder="Secure Password" value={formData.password} onChange={handleInputChange} required className="premium-input" />
+                <div className="input-icon"><Building size={18} /></div>
+                <input type="text" name="organization_name" placeholder="Organization Name (e.g., City of Springfield)" value={formData.organization_name} onChange={handleInputChange} required className="premium-input" />
               </div>
-              <div className="d-flex flex-wrap gap-3 mt-1 px-1">
-                <div className={`small d-flex align-items-center gap-1 ${hasUpperCase ? 'text-success fw-bold' : 'text-muted'}`}>
-                  <CheckCircle size={14} className={hasUpperCase ? 'text-success' : 'opacity-25'} /> Uppercase
-                </div>
-                <div className={`small d-flex align-items-center gap-1 ${hasLowerCase ? 'text-success fw-bold' : 'text-muted'}`}>
-                  <CheckCircle size={14} className={hasLowerCase ? 'text-success' : 'opacity-25'} /> Lowercase
-                </div>
-                <div className={`small d-flex align-items-center gap-1 ${hasSpecialChar ? 'text-success fw-bold' : 'text-muted'}`}>
-                  <CheckCircle size={14} className={hasSpecialChar ? 'text-success' : 'opacity-25'} /> Special Char
-                </div>
-                <div className={`small d-flex align-items-center gap-1 ${isLongEnough ? 'text-success fw-bold' : 'text-muted'}`}>
-                  <CheckCircle size={14} className={isLongEnough ? 'text-success' : 'opacity-25'} /> 12+ Chars
-                </div>
-              </div>
-            </div>
 
-            <div className="upload-section mt-2">
-              <label className="fw-semibold text-dark mb-2 d-flex align-items-center gap-2"><FileText size={16} /> Official License / ID Document</label>
-              <div 
-                className={`upload-dropzone ${isDragging.license ? 'dragging' : ''} ${formData.license_document ? 'has-file' : ''}`}
-                onDragOver={(e) => handleDragOver(e, 'license')}
-                onDragLeave={(e) => handleDragLeave(e, 'license')}
-                onDrop={(e) => handleDrop(e, 'license', 'license_document')}
-              >
+              <div className="premium-input-group">
+                <div className="input-icon"><Phone size={18} /></div>
+                <input type="tel" name="phone_number" placeholder="Official Phone Number" value={formData.phone_number} onChange={handleInputChange} required className="premium-input" />
+              </div>
+
+              <div className="premium-input-group position-relative">
+                <div className="input-icon"><MapPin size={18} /></div>
                 <input 
-                  type="file" 
-                  name="license_document" 
+                  type="text" 
+                  name="city" 
+                  placeholder="City Location" 
+                  value={formData.city} 
                   onChange={handleInputChange} 
-                  accept=".pdf,image/*" 
-                  className="file-input-hidden" 
-                  required
+                  required 
+                  className="premium-input" 
+                  autoComplete="off"
                 />
-                <div className="upload-content d-flex flex-column align-items-center justify-content-center text-center p-3">
-                  <div className="upload-icon-wrapper mb-2" style={{ width: '48px', height: '48px' }}>
-                    <UploadCloud size={20} className={formData.license_document ? "text-primary" : "text-success"} />
+                <button 
+                  type="button" 
+                  onClick={handleDetectLocation} 
+                  className="btn btn-sm btn-light position-absolute end-0 top-50 translate-middle-y me-2 d-flex align-items-center gap-1 border-0 fw-semibold"
+                  disabled={isDetecting}
+                  style={{ background: 'var(--surface-low)', color: 'var(--primary)', borderRadius: '8px' }}
+                >
+                  {isDetecting ? <Loader2 size={14} className="spin" /> : <Navigation size={14} />}
+                  Auto Detect
+                </button>
+                
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="suggestions-dropdown position-absolute w-100 bg-white shadow-lg rounded-3 mt-1 z-3" style={{ top: '100%', border: '1px solid var(--border-color)' }}>
+                    {suggestions.map((place, index) => (
+                      <div 
+                        key={index} 
+                        className="suggestion-item p-3 border-bottom d-flex align-items-center gap-2"
+                        onClick={() => handleSelectSuggestion(place)}
+                        style={{ cursor: 'pointer', transition: 'background 0.2s' }}
+                      >
+                        <MapPin size={14} className="text-secondary" />
+                        <span className="text-dark small fw-medium">{place}</span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="fw-bold text-dark mb-0 small">
-                    {formData.license_document ? formData.license_document.name : "License / ID Document"}
+                )}
+              </div>
+
+              <div className="premium-input-group">
+                <div className="input-icon"><Mail size={18} /></div>
+                <input type="email" name="email" placeholder="Official Email" value={formData.email} onChange={handleInputChange} required className="premium-input" />
+              </div>
+
+              <div className="d-flex flex-column gap-2">
+                <div className="premium-input-group">
+                  <div className="input-icon"><Lock size={18} /></div>
+                  <input type="password" name="password" placeholder="Secure Password" value={formData.password} onChange={handleInputChange} required className="premium-input" />
+                </div>
+                <div className="d-flex flex-wrap gap-3 mt-1 px-1">
+                  <div className={`small d-flex align-items-center gap-1 ${hasUpperCase ? 'text-success fw-bold' : 'text-muted'}`}>
+                    <CheckCircle size={14} className={hasUpperCase ? 'text-success' : 'opacity-25'} /> Uppercase
+                  </div>
+                  <div className={`small d-flex align-items-center gap-1 ${hasLowerCase ? 'text-success fw-bold' : 'text-muted'}`}>
+                    <CheckCircle size={14} className={hasLowerCase ? 'text-success' : 'opacity-25'} /> Lowercase
+                  </div>
+                  <div className={`small d-flex align-items-center gap-1 ${hasSpecialChar ? 'text-success fw-bold' : 'text-muted'}`}>
+                    <CheckCircle size={14} className={hasSpecialChar ? 'text-success' : 'opacity-25'} /> Special Char
+                  </div>
+                  <div className={`small d-flex align-items-center gap-1 ${isLongEnough ? 'text-success fw-bold' : 'text-muted'}`}>
+                    <CheckCircle size={14} className={isLongEnough ? 'text-success' : 'opacity-25'} /> 12+ Chars
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="row g-4">
-              <div className="col-md-6">
-                <div className="upload-section">
-                  <label className="fw-semibold text-dark mb-2 d-flex align-items-center gap-2"><Building size={16} /> GSTIN Certificate</label>
-                  <div 
-                    className={`upload-dropzone ${isDragging.gstin ? 'dragging' : ''} ${formData.gstin_document ? 'has-file' : ''}`}
-                    onDragOver={(e) => handleDragOver(e, 'gstin')}
-                    onDragLeave={(e) => handleDragLeave(e, 'gstin')}
-                    onDrop={(e) => handleDrop(e, 'gstin', 'gstin_document')}
-                  >
-                    <input 
-                      type="file" 
-                      name="gstin_document" 
-                      onChange={handleInputChange} 
-                      accept=".pdf,image/*" 
-                      className="file-input-hidden" 
-                      required
-                    />
-                    <div className="upload-content d-flex flex-column align-items-center justify-content-center text-center p-3">
-                      <div className="upload-icon-wrapper mb-2" style={{ width: '48px', height: '48px' }}>
-                        <UploadCloud size={20} className={formData.gstin_document ? "text-primary" : "text-success"} />
+              <div className="upload-section mt-2">
+                <label className="fw-semibold text-dark mb-2 d-flex align-items-center gap-2"><FileText size={16} /> Official License / ID Document</label>
+                <div 
+                  className={`upload-dropzone ${isDragging.license ? 'dragging' : ''} ${formData.license_document ? 'has-file' : ''}`}
+                  onDragOver={(e) => handleDragOver(e, 'license')}
+                  onDragLeave={(e) => handleDragLeave(e, 'license')}
+                  onDrop={(e) => handleDrop(e, 'license', 'license_document')}
+                >
+                  <input 
+                    type="file" 
+                    name="license_document" 
+                    onChange={handleInputChange} 
+                    accept=".pdf,image/*" 
+                    className="file-input-hidden" 
+                    required
+                  />
+                  <div className="upload-content d-flex flex-column align-items-center justify-content-center text-center p-3">
+                    <div className="upload-icon-wrapper mb-2" style={{ width: '48px', height: '48px' }}>
+                      <UploadCloud size={20} className={formData.license_document ? "text-primary" : "text-success"} />
+                    </div>
+                    <div className="fw-bold text-dark mb-0 small">
+                      {formData.license_document ? formData.license_document.name : "License / ID Document"}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="row g-4">
+                <div className="col-md-6">
+                  <div className="upload-section">
+                    <label className="fw-semibold text-dark mb-2 d-flex align-items-center gap-2"><Building size={16} /> GSTIN Certificate</label>
+                    <div 
+                      className={`upload-dropzone ${isDragging.gstin ? 'dragging' : ''} ${formData.gstin_document ? 'has-file' : ''}`}
+                      onDragOver={(e) => handleDragOver(e, 'gstin')}
+                      onDragLeave={(e) => handleDragLeave(e, 'gstin')}
+                      onDrop={(e) => handleDrop(e, 'gstin', 'gstin_document')}
+                    >
+                      <input 
+                        type="file" 
+                        name="gstin_document" 
+                        onChange={handleInputChange} 
+                        accept=".pdf,image/*" 
+                        className="file-input-hidden" 
+                        required
+                      />
+                      <div className="upload-content d-flex flex-column align-items-center justify-content-center text-center p-3">
+                        <div className="upload-icon-wrapper mb-2" style={{ width: '48px', height: '48px' }}>
+                          <UploadCloud size={20} className={formData.gstin_document ? "text-primary" : "text-success"} />
+                        </div>
+                        <div className="fw-bold text-dark mb-0 small">
+                          {formData.gstin_document ? formData.gstin_document.name : "Upload GSTIN"}
+                        </div>
                       </div>
-                      <div className="fw-bold text-dark mb-0 small">
-                        {formData.gstin_document ? formData.gstin_document.name : "Upload GSTIN"}
+                    </div>
+                  </div>
+                </div>
+                <div className="col-md-6">
+                  <div className="upload-section">
+                    <label className="fw-semibold text-dark mb-2 d-flex align-items-center gap-2"><FileText size={16} /> Authorization Letter</label>
+                    <div 
+                      className={`upload-dropzone ${isDragging.auth ? 'dragging' : ''} ${formData.auth_letter_document ? 'has-file' : ''}`}
+                      onDragOver={(e) => handleDragOver(e, 'auth')}
+                      onDragLeave={(e) => handleDragLeave(e, 'auth')}
+                      onDrop={(e) => handleDrop(e, 'auth', 'auth_letter_document')}
+                    >
+                      <input 
+                        type="file" 
+                        name="auth_letter_document" 
+                        onChange={handleInputChange} 
+                        accept=".pdf,image/*" 
+                        className="file-input-hidden" 
+                        required
+                      />
+                      <div className="upload-content d-flex flex-column align-items-center justify-content-center text-center p-3">
+                        <div className="upload-icon-wrapper mb-2" style={{ width: '48px', height: '48px' }}>
+                          <UploadCloud size={20} className={formData.auth_letter_document ? "text-primary" : "text-success"} />
+                        </div>
+                        <div className="fw-bold text-dark mb-0 small">
+                          {formData.auth_letter_document ? formData.auth_letter_document.name : "Authorization Letter"}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="upload-section">
-                  <label className="fw-semibold text-dark mb-2 d-flex align-items-center gap-2"><FileText size={16} /> Authorization Letter</label>
-                  <div 
-                    className={`upload-dropzone ${isDragging.auth ? 'dragging' : ''} ${formData.auth_letter_document ? 'has-file' : ''}`}
-                    onDragOver={(e) => handleDragOver(e, 'auth')}
-                    onDragLeave={(e) => handleDragLeave(e, 'auth')}
-                    onDrop={(e) => handleDrop(e, 'auth', 'auth_letter_document')}
-                  >
-                    <input 
-                      type="file" 
-                      name="auth_letter_document" 
-                      onChange={handleInputChange} 
-                      accept=".pdf,image/*" 
-                      className="file-input-hidden" 
-                      required
-                    />
-                    <div className="upload-content d-flex flex-column align-items-center justify-content-center text-center p-3">
-                      <div className="upload-icon-wrapper mb-2" style={{ width: '48px', height: '48px' }}>
-                        <UploadCloud size={20} className={formData.auth_letter_document ? "text-primary" : "text-success"} />
-                      </div>
-                      <div className="fw-bold text-dark mb-0 small">
-                        {formData.auth_letter_document ? formData.auth_letter_document.name : "Authorization Letter"}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <button type="submit" className="btn btn-primary btn-lg rounded-pill py-3 mt-4 fw-bold w-100 d-flex align-items-center justify-content-center gap-2 magnetic-btn shadow-sm" disabled={isLoading}>
-              {isLoading ? (
-                <><Loader2 size={20} className="spin" /> Processing...</>
-              ) : (
-                <><ShieldCheck size={20} /> Submit Application</>
-              )}
-            </button>
-          </form>
+              <button type="submit" className="btn btn-primary btn-lg rounded-pill py-3 mt-4 fw-bold w-100 d-flex align-items-center justify-content-center gap-2 magnetic-btn shadow-sm" disabled={isLoading}>
+                {isLoading ? (
+                  <><Loader2 size={20} className="spin" /> Processing...</>
+                ) : (
+                  <><ShieldCheck size={20} /> Verify & Submit</>
+                )}
+              </button>
+            </form>
+          ) : (
+            <div className="d-flex flex-column justify-content-start pt-2">
+              <OtpVerification 
+                email={formData.email}
+                otp={otp}
+                setOtp={setOtp}
+                onVerify={handleFinalSubmit}
+                onResend={handleSubmit}
+                isLoading={isLoading}
+              />
+            </div>
+          )}
         </div>
       </div>
       

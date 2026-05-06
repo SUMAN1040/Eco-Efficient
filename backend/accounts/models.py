@@ -62,7 +62,13 @@ class UserProfile(models.Model):
         return self.name
 
 class AdminProfile(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "PENDING", _("Pending")
+        APPROVED = "APPROVED", _("Approved")
+        REJECTED = "REJECTED", _("Rejected")
+
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin_profile')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
     admin_id = models.CharField(max_length=50, unique=True, blank=True, null=True)
     organization_name = models.CharField(max_length=255, blank=True, null=True)
     license_document = models.FileField(upload_to='admin_licenses/', blank=True, null=True)

@@ -244,12 +244,14 @@ class SuperuserDashboardView(APIView):
     def get(self, request):
         users = User.objects.filter(role=User.Role.USER)
         partners = User.objects.filter(role=User.Role.PARTNER)
-        admins = User.objects.filter(role=User.Role.ADMIN)
+        admins = User.objects.filter(role=User.Role.ADMIN, admin_profile__status=AdminProfile.Status.APPROVED)
+        pending_admins = AdminProfile.objects.filter(status=AdminProfile.Status.PENDING)
         
         context = {
             'users': users,
             'partners': partners,
             'admins': admins,
+            'pending_admins': pending_admins,
         }
         return render(request, 'superuser_dashboard.html', context)
 
@@ -269,11 +271,13 @@ class UpdateUserRoleView(APIView):
             
             # Create corresponding profiles if they don't exist
             if new_role == User.Role.ADMIN:
+                import uuid
                 AdminProfile.objects.get_or_create(
                     user=target_user,
-                    defaults={'admin_id': f"ADM-{uuid.uuid4().hex[:8].upper()}"}
+                    defaults={'admin_id': f"ADM-{uuid.uuid4().hex[:8].upper()}", 'status': AdminProfile.Status.APPROVED}
                 )
             elif new_role == User.Role.PARTNER:
+                import uuid
                 PartnerProfile.objects.get_or_create(
                     user=target_user,
                     defaults={'partner_id': f"PTR-{uuid.uuid4().hex[:8].upper()}"}
@@ -285,9 +289,128 @@ class UpdateUserRoleView(APIView):
             
         return redirect('superuser-dashboard')
 
+@method_decorator(user_passes_test(is_superuser), name='dispatch')
+class ApproveAdminRequestView(APIView):
+    def post(self, request, profile_id):
+        profile = get_object_or_404(AdminProfile, id=profile_id)
+        if profile.status != AdminProfile.Status.PENDING:
+            messages.error(request, "Request is not pending.")
+            return redirect('superuser-dashboard')
+            
+        generated_admin_id = request.POST.get('generated_admin_id')
+        if not generated_admin_id:
+            import uuid
+            generated_admin_id = f"ADM-{uuid.uuid4().hex[:8].upper()}"
+            
+        profile.admin_id = generated_admin_id
+        profile.status = AdminProfile.Status.APPROVED
+        profile.save()
+        
+        profile.user.is_active = True
+        profile.user.save()
+        
+        # Send Email
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        subject = 'Admin Request Approved'
+        message = f'Your request has been approved. Your Admin ID is {profile.admin_id}.'
+        
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [profile.user.email])
+        except Exception as e:
+            print(f"Email error: {e}")
+            
+        messages.success(request, f"Admin request from {profile.user.email} approved.")
+        return redirect('superuser-dashboard')
+
+@method_decorator(user_passes_test(is_superuser), name='dispatch')
+class RejectAdminRequestView(APIView):
+    def post(self, request, profile_id):
+        profile = get_object_or_404(AdminProfile, id=profile_id)
+        if profile.status != AdminProfile.Status.PENDING:
+            messages.error(request, "Request is not pending.")
+            return redirect('superuser-dashboard')
+            
+        note = request.POST.get('rejection_note', '')
+        user = profile.user
+        
+        # Send Rejection Email
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        subject = 'Admin Request Update'
+        message = f'We are sorry, your request has been rejected.\nReason: {note}'
+        
+        try:
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [user.email])
+        except Exception as e:
+            print(f"Email error: {e}")
+            
+        # Delete user and profile so they can reapply
+        user.delete()
+        
+        messages.success(request, f"Admin request from {user.email} rejected and deleted.")
+        return redirect('superuser-dashboard')
+
+@method_decorator(user_passes_test(is_superuser), name='dispatch')
+class DeleteUserView(APIView):
+    def post(self, request, user_id):
+        target_user = get_object_or_404(User, id=user_id)
+        if target_user.is_superuser:
+            messages.error(request, "Cannot delete a superuser.")
+            return redirect('superuser-dashboard')
+            
+        subject = request.POST.get('subject')
+        content = request.POST.get('content')
+        
+        if not subject or not content:
+            messages.error(request, "Subject and Content are required to delete a user.")
+            return redirect('superuser-dashboard')
+            
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        email = target_user.email
+        
+        try:
+            send_mail(subject, content, settings.DEFAULT_FROM_EMAIL, [email])
+        except Exception as e:
+            print(f"Email error during deletion: {e}")
+            messages.warning(request, f"User deleted, but failed to send the notification email to {email}.")
+            
+        target_user.delete()
+        messages.success(request, f"User {email} has been permanently deleted and notified.")
+        return redirect('superuser-dashboard')
+
+@method_decorator(user_passes_test(is_superuser), name='dispatch')
+class SendEmailView(APIView):
+    def post(self, request, user_id):
+        target_user = get_object_or_404(User, id=user_id)
+        subject = request.POST.get('subject')
+        content = request.POST.get('content')
+        
+        if not subject or not content:
+            messages.error(request, "Subject and Content are required to send an email.")
+            return redirect('superuser-dashboard')
+            
+        from django.core.mail import send_mail
+        from django.conf import settings
+        
+        try:
+            send_mail(subject, content, settings.DEFAULT_FROM_EMAIL, [target_user.email])
+            messages.success(request, f"Email sent successfully to {target_user.email}.")
+        except Exception as e:
+            print(f"Email error: {e}")
+            messages.error(request, f"Failed to send email to {target_user.email}.")
+            
+        return redirect('superuser-dashboard')
+
 class AdminRequestView(APIView):
     def post(self, request):
         email = request.data.get('email')
+        otp = request.data.get('otp')
+        phone_number = request.data.get('phone_number')
         password = request.data.get('password')
         org_name = request.data.get('organization_name')
         city = request.data.get('city')
@@ -295,31 +418,35 @@ class AdminRequestView(APIView):
         gstin_doc = request.FILES.get('gstin_document')
         auth_letter_doc = request.FILES.get('auth_letter_document')
 
-        if not email or not password or not org_name or not city or not license_doc or not gstin_doc or not auth_letter_doc:
-            return Response({"detail": "Please provide all required fields, including location, organization, and all documents."}, status=status.HTTP_400_BAD_REQUEST)
+        if not email or not password or not org_name or not city or not license_doc or not gstin_doc or not auth_letter_doc or not phone_number:
+            return Response({"detail": "Please provide all required fields, including location, phone number, organization, and all documents."}, status=status.HTTP_400_BAD_REQUEST)
             
         if User.objects.filter(email=email).exists():
-            return Response({"email": "User with this email already exists."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"email": "by using this mail this already made request"}, status=status.HTTP_400_BAD_REQUEST)
+            
+        from .models import EmailOTP
+        otp_record = EmailOTP.objects.filter(email=email, otp=otp).order_by('-created_at').first()
+        if not otp_record:
+            return Response({"otp": "Invalid or missing OTP."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             # Create the User
             user = User.objects.create_user(email=email, password=password)
             user.role = User.Role.ADMIN
+            user.is_active = False # Require approval
             user.save()
 
             # Create UserProfile
             UserProfile.objects.create(
                 user=user,
                 name=org_name,
+                phone_number=phone_number,
                 city=city
             )
 
-            # Create AdminProfile
-            import uuid
-            admin_id = f"ADM-{uuid.uuid4().hex[:8].upper()}"
+            # Create AdminProfile (Pending by default)
             AdminProfile.objects.create(
                 user=user,
-                admin_id=admin_id,
                 organization_name=org_name,
                 license_document=license_doc,
                 gstin_document=gstin_doc,
