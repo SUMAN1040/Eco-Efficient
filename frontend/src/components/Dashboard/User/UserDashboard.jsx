@@ -30,11 +30,11 @@ import {
   Lock,
   Check
 } from 'lucide-react';
-import Impact from './Impact';
-import SettingsModal from './SettingsModal';
-import RewardsModal from './RewardsModal';
-import NotificationsModal from './NotificationsModal';
-import SubmitWasteModal from './SubmitWasteModal';
+import Impact from './Tab/Impact';
+import SettingsModal from './Tab/SettingsModal';
+import RewardsModal from './Tab/RewardsModal';
+import NotificationsModal from './Tab/NotificationsModal';
+import SubmitWasteModal from './Tab/SubmitWasteModal';
 // --- Custom Design System for Bootstrap ---
 const styles = {
   glassCard: {

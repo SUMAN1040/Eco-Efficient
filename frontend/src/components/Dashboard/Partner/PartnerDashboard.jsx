@@ -16,11 +16,11 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Modular Component Imports (Keeping main content sections modular)
-import Overview from './Overview';
-import AdminRequests from './AdminRequests';
-import Inventory from './Inventory';
-import StoreManagement from './StoreManagement';
-import PerformanceMetrics from './PerformanceMetrics';
+import Overview from './Tab/Overview';
+import AdminRequests from './Tab/AdminRequests';
+import Inventory from './Tab/Inventory';
+import StoreManagement from './Tab/StoreManagement';
+import PerformanceMetrics from './Tab/PerformanceMetrics';
 
 const PartnerDashboard = () => {
   const navigate = useNavigate();

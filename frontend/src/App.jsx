@@ -5,9 +5,9 @@ import Footer from './components/LandingPage/Footer';
 import Landing from './pages/Landing';
 import Auth from './components/Auth/Auth';
 import UserDashboard from './components/Dashboard/User/UserDashboard';
-import HelpSupport from './components/Dashboard/User/HelpSupport';
-import Redeem from './components/Dashboard/User/Redeem';
-import Impact from './components/Dashboard/User/Impact';
+import HelpSupport from './components/Dashboard/User/Tab/HelpSupport';
+import Redeem from './components/Dashboard/User/Tab/Redeem';
+import Impact from './components/Dashboard/User/Tab/Impact';
 import AdminDashboard from './components/Dashboard/Admin/AdminDashboard';
 import PartnerDashboard from './components/Dashboard/Partner/PartnerDashboard';
 

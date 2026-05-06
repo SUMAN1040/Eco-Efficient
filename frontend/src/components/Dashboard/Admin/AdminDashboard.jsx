@@ -13,10 +13,10 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import OverviewTab from './Tabs/OverviewTab';
-import ProfileTab from './ProfileTab';
+import ProfileTab from './Tabs/ProfileTab';
 import EcoCoinsTab from './Tabs/EcoCoinsTab';
 import PartnersTab from './Tabs/PartnersTab';
-import PickupsTab from './PickupsTab';
+import PickupsTab from './Tabs/PickupsTab';
 import ApprovalsTab from './Tabs/ApprovalsTab';
 
 const AdminDashboard = () => {
