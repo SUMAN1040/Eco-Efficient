@@ -52,7 +52,6 @@ const ProfileTab = ({ userProfile, onEditClick }) => {
         </div>
       </div>
 
-
       {/* ── Body ── */}
       <div className="row g-4">
 
