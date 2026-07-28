@@ -45,7 +45,7 @@ const AdminDashboard = () => {
     try {
       const token = localStorage.getItem('accessToken');
       if (!token) return;
-      const response = await axios.get('http://localhost:8000/api/accounts/profile/', {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/api/accounts/profile/`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUserProfile({

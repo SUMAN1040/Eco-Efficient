@@ -50,7 +50,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
 
     if (localProfileData.email !== originalEmail && !showOTPInput) {
       try {
-        await axios.post('http://localhost:8000/api/accounts/send-otp/', { email: localProfileData.email });
+        await axios.post(`${import.meta.env.VITE_API_URL}/api/accounts/send-otp/`, { email: localProfileData.email });
         setShowOTPInput(true);
         alert('An OTP has been sent to your new email. Please enter it to verify.');
         setIsUpdatingProfile(false);
@@ -79,7 +79,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
         formData.append('avatar', avatarFile);
       }
 
-      const response = await axios.put('http://localhost:8000/api/accounts/profile/', formData, {
+      const response = await axios.put(`${import.meta.env.VITE_API_URL}/api/accounts/profile/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -115,7 +115,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
     setConfirmPassword('');
     setIsChangingPassword(true);
     try {
-      await axios.post('http://localhost:8000/api/accounts/send-otp/', { email: profileData.email });
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/accounts/send-otp/`, { email: profileData.email });
       alert('An OTP has been sent to your email. Please enter it to change your password.');
     } catch (error) {
       console.error('Failed to send OTP:', error);
@@ -131,7 +131,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
     setIsChangingPassword(true);
     try {
       const token = localStorage.getItem('accessToken');
-      await axios.post('http://localhost:8000/api/accounts/verify-otp/', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/accounts/verify-otp/`, {
         otp: passwordOTP
       }, {
         headers: { Authorization: `Bearer ${token}` }
@@ -162,7 +162,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
     setIsChangingPassword(true);
     try {
       const token = localStorage.getItem('accessToken');
-      await axios.post('http://localhost:8000/api/accounts/change-password/', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/accounts/change-password/`, {
         otp: passwordOTP,
         new_password: newPassword
       }, {
@@ -186,7 +186,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
   const handleInitiateDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      await axios.post('http://localhost:8000/api/accounts/send-otp/', { email: profileData.email });
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/accounts/send-otp/`, { email: profileData.email });
       setDeleteStep('otp');
       alert('An OTP has been sent to your email to confirm account deletion.');
     } catch (error) {
@@ -202,7 +202,7 @@ const SettingsModal = ({ show, onClose, profileData, fetchProfileData, handleLog
     setIsDeleting(true);
     try {
       const token = localStorage.getItem('accessToken');
-      await axios.post('http://localhost:8000/api/accounts/delete-account/', {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/accounts/delete-account/`, {
         otp: deleteOTP
       }, {
         headers: { Authorization: `Bearer ${token}` }

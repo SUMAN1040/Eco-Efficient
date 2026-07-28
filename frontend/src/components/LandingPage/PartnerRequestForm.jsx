@@ -151,7 +151,7 @@ const PartnerRequestForm = ({ onClose }) => {
         data.append('auth_letter_document', formData.auth_letter_document);
       }
 
-      const response = await fetch('http://localhost:8000/api/accounts/partner-request/', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/accounts/partner-request/`, {
         method: 'POST',
         body: data,
       });

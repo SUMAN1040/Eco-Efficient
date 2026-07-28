@@ -141,7 +141,7 @@ const AdminRequestForm = ({ onClose }) => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/accounts/send-otp/', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/accounts/send-otp/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email }),
@@ -188,7 +188,7 @@ const AdminRequestForm = ({ onClose }) => {
         data.append('auth_letter_document', formData.auth_letter_document);
       }
 
-      const response = await fetch('http://localhost:8000/api/accounts/admin-request/', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/accounts/admin-request/`, {
         method: 'POST',
         body: data,
       });
