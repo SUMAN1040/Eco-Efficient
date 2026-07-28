@@ -77,14 +77,15 @@ const PartnerRequestForm = ({ onClose }) => {
           `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
         );
         const data = await response.json();
-        const city = data.address.city || data.address.town || data.address.village || data.address.suburb;
-        const country = data.address.country;
+        const city = data.address.city || data.address.town || data.address.village || data.address.municipality || data.address.county || data.address.state_district || data.address.suburb || data.address.name;
+        const state = data.address.state || data.address.region || "";
+        const country = data.address.country || "";
         
-        if (city) {
-          setFormData(prev => ({ ...prev, city: `${city}, ${country}` }));
-        } else {
-          setFormData(prev => ({ ...prev, city: country || "Unknown Location" }));
-        }
+        let locationString = city ? city : "Unknown Area";
+        if (state && state !== city) locationString += `, ${state}`;
+        if (country) locationString += `, ${country}`;
+        
+        setFormData(prev => ({ ...prev, city: locationString }));
       } catch (error) {
         console.error("Detection error:", error);
         alert("Failed to detect location accurately.");
