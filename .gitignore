@@ -22,3 +22,22 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment
+.env
+.env.*
+
+# Vercel
+.vercel/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+env
+
+# Django
+db.sqlite3
+media/
+static/
+staticfiles/
