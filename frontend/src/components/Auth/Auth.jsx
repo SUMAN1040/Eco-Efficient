@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User, MapPin, Phone, ArrowRight, ShieldAlert, Briefcase, ChevronLeft, Navigation, Loader2, CheckCircle } from 'lucide-react';
 import OtpVerification from './OtpVerification';
+import PhoneInput from 'react-phone-number-input';
+import 'react-phone-number-input/style.css';
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -343,13 +345,14 @@ const Auth = () => {
                   {!isLogin && !isForgot && (
                     <div className="input-group-nature">
                       <label><Phone size={14} /> Phone Number</label>
-                      <input 
-                        type="tel" 
-                        name="phone"
-                        placeholder="+1 (555) 000-0000" 
+                      <PhoneInput
+                        placeholder="+1 (555) 000-0000"
                         value={formData.phone}
-                        onChange={handleInputChange}
+                        onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+                        defaultCountry="IN"
                         required
+                        className="w-100"
+                        style={{ '--PhoneInput-color--focus': 'var(--primary)' }}
                       />
                     </div>
                   )}
