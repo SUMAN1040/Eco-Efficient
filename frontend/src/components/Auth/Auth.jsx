@@ -350,6 +350,8 @@ const Auth = () => {
                         value={formData.phone}
                         onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
                         defaultCountry="IN"
+                        international
+                        withCountryCallingCode
                         required
                         className="w-100"
                         style={{ '--PhoneInput-color--focus': 'var(--primary)' }}
