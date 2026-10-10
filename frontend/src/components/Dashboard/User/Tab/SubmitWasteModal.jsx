@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, X, MapPin, Calendar, Scale, AlignLeft, Send, CheckCircle2 } from 'lucide-react';
 
-const SubmitWasteModal = ({ show, onClose }) => {
+const SubmitWasteModal = ({ show, onClose, initialData = null }) => {
   const [formData, setFormData] = useState({
     waste_type: '',
     quantity: '',
@@ -12,6 +12,16 @@ const SubmitWasteModal = ({ show, onClose }) => {
   const [isLocating, setIsLocating] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    if (initialData && show) {
+      setFormData(prev => ({
+        ...prev,
+        waste_type: initialData.waste_type || prev.waste_type,
+        additional_notes: initialData.notes ? (prev.additional_notes ? `${prev.additional_notes} | ${initialData.notes}` : initialData.notes) : prev.additional_notes
+      }));
+    }
+  }, [initialData, show]);
 
   if (!show) return null;
 
@@ -117,6 +127,8 @@ const SubmitWasteModal = ({ show, onClose }) => {
                     <option value="Organic">Organic Waste</option>
                     <option value="Plastic">Plastic</option>
                     <option value="Metal">Metal</option>
+                    <option value="Cardboard">Cardboard & Paper</option>
+                    <option value="Glass">Glass</option>
                     <option value="E-Waste">E-Waste</option>
                   </select>
                 </div>

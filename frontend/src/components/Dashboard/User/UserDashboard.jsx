@@ -35,6 +35,7 @@ import SettingsModal from './Tab/SettingsModal';
 import RewardsModal from './Tab/RewardsModal';
 import NotificationsModal from './Tab/NotificationsModal';
 import SubmitWasteModal from './Tab/SubmitWasteModal';
+import ScanWasteModal from './Tab/ScanWasteModal';
 // --- Custom Design System for Bootstrap ---
 const styles = {
   glassCard: {
@@ -215,6 +216,8 @@ const UserDashboard = () => {
   const [showNotificationsModal, setShowNotificationsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showSubmitWasteModal, setShowSubmitWasteModal] = useState(false);
+  const [showScanWasteModal, setShowScanWasteModal] = useState(false);
+  const [prefilledWasteData, setPrefilledWasteData] = useState(null);
   const [profileData, setProfileData] = useState({ name: '', email: '', phone_number: '', city: '', avatar: '' });
   const [isRescheduling, setIsRescheduling] = useState(false);
   const [pickupDate, setPickupDate] = useState('2026-10-12');
@@ -539,7 +542,14 @@ return (
               <QuickAction title="Submit Waste" desc="Log new eco-data" icon={<Plus />} variant="emerald" onClick={() => setShowSubmitWasteModal(true)} />
             </div>
             <div className="col-12 col-md-4">
-              <QuickAction title="Scan Waste" desc="Analyze material types" icon={<Camera />} variant="glass" badge="New AI" />
+              <QuickAction 
+                title="Scan Waste" 
+                desc="Analyze material types" 
+                icon={<Camera />} 
+                variant="glass" 
+                badge="New AI" 
+                onClick={() => setShowScanWasteModal(true)} 
+              />
             </div>
             <div className="col-12 col-md-4">
               <QuickAction title="View Rewards" desc="Claim your eco-perks" icon={<Trophy />} variant="outline" onClick={() => setShowRewardsModal(true)} />
@@ -647,7 +657,22 @@ return (
     </main>
 
     {/* Modals */}
-    <SubmitWasteModal show={showSubmitWasteModal} onClose={() => setShowSubmitWasteModal(false)} />
+    <ScanWasteModal 
+      show={showScanWasteModal} 
+      onClose={() => setShowScanWasteModal(false)} 
+      onWasteLogged={(scannedData) => {
+        setPrefilledWasteData(scannedData);
+        setShowSubmitWasteModal(true);
+      }}
+    />
+    <SubmitWasteModal 
+      show={showSubmitWasteModal} 
+      onClose={() => {
+        setShowSubmitWasteModal(false);
+        setPrefilledWasteData(null);
+      }} 
+      initialData={prefilledWasteData}
+    />
     <RewardsModal show={showRewardsModal} onClose={() => setShowRewardsModal(false)} />
     <NotificationsModal show={showNotificationsModal} onClose={() => setShowNotificationsModal(false)} />
     <SettingsModal 
