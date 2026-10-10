@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.16.0",
     "bootstrap": "^5.3.8",
     "lucide-react": "^1.8.0",
